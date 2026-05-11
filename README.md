@@ -1,4 +1,4 @@
-# Course Activity Icons (local_courseicons)
+# Course Activity Icons
 
 A local plugin for Moodle that allows teachers to customize the icons of activities and resources in their courses, replacing the default ones with custom images (SVG, PNG, JPG, or GIF).
 
