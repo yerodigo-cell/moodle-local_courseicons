@@ -18,7 +18,7 @@ While the images **do not strictly need to be square** (the plugin uses smart sc
 
 ## ✨ Key Features
 
-* **Smart Adaptability:** The plugin detects the course format to matche the native size of the icons.
+* **Smart Adaptability:** The plugin detects the course format to match the native size of the icons.
 
 * **Animation Support:** Allows uploading animated GIFs to bring more life and dynamism to your courses.
 
