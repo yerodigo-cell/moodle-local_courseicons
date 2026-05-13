@@ -67,10 +67,12 @@ function local_courseicons_standard_head_html(): string {
             
             // Reemplazo visual CSS instantáneo (Nativo del navegador)
             $css .= "
-/* Actividad {$record->cmid} */
+/* Actividad {$record->cmid} - Fondos transparentes (Página de curso e interior de actividad) */
 .activity-item[data-id=\"{$record->cmid}\"] .activityiconcontainer,
 #module-{$record->cmid} .activityiconcontainer,
-li.subtile[data-id=\"{$record->cmid}\"] .tile-icon {
+li.subtile[data-id=\"{$record->cmid}\"] .tile-icon,
+body.cmid-{$record->cmid} .page-header-image .activityiconcontainer,
+body.cmid-{$record->cmid} .page-header-headings .activityiconcontainer {
     background-color: transparent !important;
     background: transparent !important;
     box-shadow: none !important;
@@ -86,6 +88,17 @@ li.subtile[data-id=\"{$record->cmid}\"] .tile-icon {
     object-fit: contain !important;
     width: 32px !important;
     height: 32px !important;
+    filter: none !important;
+    border-radius: 0 !important;
+}
+
+/* FIX 1.28: Icono grande en la cabecera DENTRO de la página de la actividad */
+body.cmid-{$record->cmid} .page-header-image img,
+body.cmid-{$record->cmid} .page-header-headings img.activityicon {
+    content: url('{$url}') !important;
+    object-fit: contain !important;
+    width: 50px !important;
+    height: 50px !important;
     filter: none !important;
     border-radius: 0 !important;
 }
