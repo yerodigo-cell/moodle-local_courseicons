@@ -27,22 +27,112 @@ declare(strict_types=1);
 defined('MOODLE_INTERNAL') || die();
 
 /**
+ * Inyecta CSS y Precargas globalmente.
+ * Consolida la carga instantánea eliminando transiciones o código oculto innecesario.
+ */
+function local_courseicons_standard_head_html(): string {
+    global $COURSE, $DB;
+    static $already_injected = false;
+
+    if ($already_injected || empty($COURSE->id) || $COURSE->id <= 1) {
+        return '';
+    }
+
+    $records = $DB->get_records('local_courseicons', ['courseid' => $COURSE->id]);
+    if (empty($records)) {
+        return '';
+    }
+
+    $already_injected = true;
+    $fs = get_file_storage();
+    $html = "\n<!-- local_courseicons CSS & Preloads -->\n";
+    $css = "<style type=\"text/css\">\n";
+
+    foreach ($records as $record) {
+        $modcontext = context_module::instance($record->cmid, IGNORE_MISSING);
+        if (!$modcontext) {
+            continue;
+        }
+
+        $files = $fs->get_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0, 'id', false);
+        
+        if (!empty($files)) {
+            $file = reset($files);
+            $murl = moodle_url::make_pluginfile_url($modcontext->id, 'local_courseicons', 'activityicon', 0, '/', $file->get_filename());
+            $murl->param('t', $record->timemodified);
+            $url = $murl->out(false);
+            
+            // Forzamos la descarga temprana
+            $html .= "<link rel=\"preload\" href=\"{$url}\" as=\"image\">\n";
+            
+            // Reemplazo visual CSS instantáneo (Nativo del navegador)
+            $css .= "
+/* Actividad {$record->cmid} */
+.activity-item[data-id=\"{$record->cmid}\"] .activityiconcontainer,
+#module-{$record->cmid} .activityiconcontainer,
+li.subtile[data-id=\"{$record->cmid}\"] .tile-icon {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* FIX 1.27: Selectores estrictos para que no sangren a los Action Menus o Group Menus */
+.activity-item[data-id=\"{$record->cmid}\"] .activityiconcontainer img,
+#module-{$record->cmid} .activityiconcontainer img,
+#module-{$record->cmid} .activityinstance > a > img.activityicon,
+#module-{$record->cmid} .activityinstance > a > img.icon {
+    content: url('{$url}') !important;
+    object-fit: contain !important;
+    width: 32px !important;
+    height: 32px !important;
+    filter: none !important;
+    border-radius: 0 !important;
+}
+
+li.subtile[data-id=\"{$record->cmid}\"] .tile-icon img {
+    content: url('{$url}') !important;
+    object-fit: contain !important;
+    width: 100% !important;
+    height: 110px !important;
+    transform: scale(1.4) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+}
+
+li.subtile[data-id=\"{$record->cmid}\"] .tile-icon {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+";
+        }
+    }
+
+    $css .= "</style>\n";
+    return $html . $css;
+}
+
+/**
+ * Alias de compatibilidad para asegurar la inyección en distintas versiones de Moodle.
+ */
+function local_courseicons_before_standard_html_head(): string {
+    return local_courseicons_standard_head_html();
+}
+
+/**
  * Extends the global navigation.
- * We use this global hook to guarantee our JS is injected on the course page,
- * regardless of how the theme builds its menus.
- *
- * @param \global_navigation $navigation The global navigation object.
+ * We use this global hook to guarantee our JS is injected on the course page.
  */
 function local_courseicons_extend_navigation(global_navigation $navigation): void {
     global $PAGE, $COURSE, $DB;
 
-    // Solo inyectar si estamos dentro del contexto de un curso real.
-    // Hemos eliminado la restricción estricta de pagetype para que funcione en cualquier formato de curso.
     if (empty($COURSE->id) || $COURSE->id <= 1) {
         return;
     }
 
-    // Prevenir inyección múltiple en la misma página.
     static $jsloaded = false;
     if ($jsloaded) {
         return;
@@ -56,24 +146,24 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
         $fs = get_file_storage();
         
         foreach ($records as $record) {
-            $modcontext = context_module::instance($record->cmid);
+            $modcontext = context_module::instance($record->cmid, IGNORE_MISSING);
+            if (!$modcontext) {
+                continue;
+            }
+
             $files = $fs->get_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0, 'id', false);
             
             if (!empty($files)) {
                 $file = reset($files);
-                $filename = $file->get_filename();
-                
-                // Construcción segura de la URL sin romper los parámetros de Moodle.
                 $murl = moodle_url::make_pluginfile_url(
                     $modcontext->id,
                     'local_courseicons',
                     'activityicon',
                     0,
                     '/',
-                    $filename
+                    $file->get_filename()
                 );
                 
-                // Agregamos la fecha de forma oficial a través de la API de Moodle para evadir la caché.
                 $murl->param('t', $record->timemodified);
 
                 $icondata[] = [
@@ -84,6 +174,7 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
         }
 
         if (!empty($icondata)) {
+            // Mandamos los datos al JS para manipulación de DOM profunda.
             $PAGE->requires->js_call_amd('local_courseicons/swapper', 'init', [$icondata]);
         }
     }
@@ -92,10 +183,6 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
 /**
  * Extends the course navigation (Moodle 4.0+ secondary navigation).
  * This purely adds the "Customize activity icons" button for teachers.
- *
- * @param \navigation_node $navigation The navigation node to extend.
- * @param \stdClass $course The course object.
- * @param \context $context The context object.
  */
 function local_courseicons_extend_navigation_course(
     navigation_node $navigation,
@@ -118,15 +205,6 @@ function local_courseicons_extend_navigation_course(
 
 /**
  * Serves the custom activity icons files.
- *
- * @param stdClass $course The course object.
- * @param stdClass $cm The course module object.
- * @param context $context The context object.
- * @param string $filearea The file area.
- * @param array $args Extra arguments.
- * @param bool $forcedownload Whether to force download.
- * @param array $options Additional options.
- * @return bool
  */
 function local_courseicons_pluginfile(
     $course,
