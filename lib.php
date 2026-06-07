@@ -27,8 +27,10 @@ declare(strict_types=1);
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Inyecta CSS y Precargas globalmente.
- * Consolida la carga instantánea eliminando transiciones o código oculto innecesario.
+ * Injects CSS and Preloads globally.
+ * Consolidates instant loading by eliminating transitions or unnecessary hidden code.
+ *
+ * @return string
  */
 function local_courseicons_standard_head_html(): string {
     global $COURSE, $DB;
@@ -62,12 +64,12 @@ function local_courseicons_standard_head_html(): string {
             $murl->param('t', $record->timemodified);
             $url = $murl->out(false);
             
-            // Forzamos la descarga temprana
+            // Force early download.
             $html .= "<link rel=\"preload\" href=\"{$url}\" as=\"image\">\n";
             
-            // Reemplazo visual CSS instantáneo (Nativo del navegador)
+            // Instant CSS visual replacement (Browser native).
             $css .= "
-/* Actividad {$record->cmid} - Fondos transparentes (Página de curso e interior de actividad) */
+/* Activity {$record->cmid} - Transparent backgrounds (Course page and activity interior) */
 .activity-item[data-id=\"{$record->cmid}\"] .activityiconcontainer,
 #module-{$record->cmid} .activityiconcontainer,
 li.subtile[data-id=\"{$record->cmid}\"] .tile-icon,
@@ -79,7 +81,7 @@ body.cmid-{$record->cmid} .page-header-headings .activityiconcontainer {
     border: none !important;
 }
 
-/* FIX 1.27: Selectores estrictos para que no sangren a los Action Menus o Group Menus */
+/* FIX 1.27: Strict selectors so they don't bleed to Action Menus or Group Menus */
 .activity-item[data-id=\"{$record->cmid}\"] .activityiconcontainer img,
 #module-{$record->cmid} .activityiconcontainer img,
 #module-{$record->cmid} .activityinstance > a > img.activityicon,
@@ -92,7 +94,7 @@ body.cmid-{$record->cmid} .page-header-headings .activityiconcontainer {
     border-radius: 0 !important;
 }
 
-/* FIX 1.28: Icono grande en la cabecera DENTRO de la página de la actividad */
+/* FIX 1.28: Large icon in the header INSIDE the activity page */
 body.cmid-{$record->cmid} .page-header-image img,
 body.cmid-{$record->cmid} .page-header-headings img.activityicon {
     content: url('{$url}') !important;
@@ -129,7 +131,9 @@ li.subtile[data-id=\"{$record->cmid}\"] .tile-icon {
 }
 
 /**
- * Alias de compatibilidad para asegurar la inyección en distintas versiones de Moodle.
+ * Compatibility alias to ensure injection in different Moodle versions.
+ *
+ * @return string
  */
 function local_courseicons_before_standard_html_head(): string {
     return local_courseicons_standard_head_html();
@@ -187,7 +191,7 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
         }
 
         if (!empty($icondata)) {
-            // Mandamos los datos al JS para manipulación de DOM profunda.
+            // Send data to JS for deep DOM manipulation.
             $PAGE->requires->js_call_amd('local_courseicons/swapper', 'init', [$icondata]);
         }
     }

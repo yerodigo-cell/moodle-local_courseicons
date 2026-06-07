@@ -58,7 +58,7 @@ class icon_upload_form extends moodleform {
             'subdirs' => 0,
             'maxbytes' => 2097152,
             'maxfiles' => 1,
-            // Soporte para GIF añadido.
+            // GIF support added.
             'accepted_types' => ['.svg', '.png', '.jpg', '.jpeg', '.gif']
         ];
         

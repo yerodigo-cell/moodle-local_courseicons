@@ -133,10 +133,10 @@ if ($cmid > 0 && isset($mform)) {
 } else {
     $modinfo = get_fast_modinfo($course);
     
-    // Obtenemos los registros completos para tener la fecha de modificación (timemodified).
+    // Get full records to have the modification date (timemodified).
     $customicons = $DB->get_records('local_courseicons', ['courseid' => $course->id], '', 'cmid, id, timemodified');
 
-    // PHPCS: Extraer strings fuera de los bucles para optimizar memoria.
+    // PHPCS: Extract strings outside loops to optimize memory.
     $strcustomized = get_string('customized', 'local_courseicons');
     $strdefault = get_string('default', 'local_courseicons');
     $strediticon = get_string('editicon', 'local_courseicons');
@@ -148,11 +148,11 @@ if ($cmid > 0 && isset($mform)) {
         get_string('currenticon', 'local_courseicons'),
         get_string('actions', 'local_courseicons')
     ];
-    // Añadimos align-middle para que la imagen y los botones queden centrados verticalmente.
+    // Add align-middle so the image and buttons are vertically centered.
     $table->attributes['class'] = 'generaltable table table-striped align-middle';
 
     foreach ($modinfo->cms as $module) {
-        // Ignorar etiquetas, subsecciones (M4.3+), bancos de preguntas (M5.x+) o estructurales.
+        // Ignore labels, subsections (M4.3+), question banks (M5.x+) or structural items.
         $ignored_modules = ['label', 'subsection', 'qbank', 'questionbank', 'course_questionbank'];
         if (in_array($module->modname, $ignored_modules) || !$module->has_view()) {
             continue;
@@ -175,7 +175,7 @@ if ($cmid > 0 && isset($mform)) {
             $record = $customicons[$module->id];
             $status = html_writer::span($strcustomized, 'badge badge-success bg-success text-white');
             
-            // Construimos la vista previa de la imagen cargada.
+            // Build the preview of the uploaded image.
             $modcontext = context_module::instance($module->id);
             $fs = get_file_storage();
             $files = $fs->get_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0, 'id', false);
@@ -183,7 +183,7 @@ if ($cmid > 0 && isset($mform)) {
             if (!empty($files)) {
                 $file = reset($files);
                 $murl = moodle_url::make_pluginfile_url($modcontext->id, 'local_courseicons', 'activityicon', 0, '/', $file->get_filename());
-                $murl->param('t', $record->timemodified); // Para evitar la caché.
+                $murl->param('t', $record->timemodified); // To avoid caching.
                 $previewhtml = html_writer::empty_tag('img', [
                     'src' => $murl->out(false),
                     'alt' => 'Custom icon preview',
@@ -193,14 +193,14 @@ if ($cmid > 0 && isset($mform)) {
         } else {
             $status = html_writer::span($strdefault, 'badge badge-secondary bg-secondary text-white');
             
-            // Mostramos el icono por defecto un poco opaco.
+            // Show the default icon slightly opaque.
             $previewhtml = $OUTPUT->pix_icon('monologo', '', $module->modname, ['style' => 'width: 32px; height: 32px; opacity: 0.4;']);
         }
 
         $modicon = $OUTPUT->pix_icon('monologo', '', $module->modname, ['class' => 'icon']);
         $modname = $modicon . ' ' . format_string($module->name);
 
-        // Agregamos la nueva variable $previewhtml a la fila.
+        // Add the new $previewhtml variable to the row.
         $table->data[] = [$modname, $previewhtml, $status, $actionlink];
     }
 
