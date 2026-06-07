@@ -26,8 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Acciones';
 $string['alltypes'] = 'Todos los tipos';
-$string['bulkdelete'] = 'Eliminar seleccionados';
-$string['bulkupload'] = 'Subir a los seleccionados';
+$string['bulkdelete'] = 'Restaurar seleccionados';
+$string['bulkupload'] = 'Cambiar seleccionados';
 $string['choosemodule'] = 'Selecciona una actividad para cambiar su icono';
 $string['courseicons:manage'] = 'Gestionar iconos de actividad personalizados';
 $string['currenticon'] = 'Estado del icono';

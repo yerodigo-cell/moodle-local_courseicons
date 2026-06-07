@@ -26,8 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Actions';
 $string['alltypes'] = 'All types';
-$string['bulkdelete'] = 'Delete selected';
-$string['bulkupload'] = 'Upload to selected';
+$string['bulkdelete'] = 'Restore selected';
+$string['bulkupload'] = 'Change selected';
 $string['choosemodule'] = 'Select an activity to change its icon';
 $string['courseicons:manage'] = 'Manage custom activity icons';
 $string['currenticon'] = 'Icon status';
