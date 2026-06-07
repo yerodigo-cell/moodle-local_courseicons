@@ -66,21 +66,23 @@ if ($action === 'delete') {
     require_sesskey();
     $cmids = optional_param_array('cmids', [], PARAM_INT);
     if (!empty($cmids)) {
-        $fs = get_file_storage();
-        foreach ($cmids as $delcmid) {
-            $DB->delete_records('local_courseicons', ['cmid' => $delcmid]);
-            $modcontext = context_module::instance($delcmid);
-            $fs->delete_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0);
+        if ($action === 'bulkdelete') {
+            $fs = get_file_storage();
+            foreach ($cmids as $delcmid) {
+                $DB->delete_records('local_courseicons', ['cmid' => $delcmid]);
+                $modcontext = context_module::instance($delcmid);
+                $fs->delete_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0);
+            }
+
+            cache::make('local_courseicons', 'course_css')->delete($course->id);
+
+            redirect(
+                $url,
+                get_string('successdeleted', 'local_courseicons'),
+                null,
+                \core\output\notification::NOTIFY_SUCCESS
+            );
         }
-
-        cache::make('local_courseicons', 'course_css')->delete($course->id);
-
-        redirect(
-            $url,
-            get_string('successdeleted', 'local_courseicons'),
-            null,
-            \core\output\notification::NOTIFY_SUCCESS
-        );
     } else {
         redirect($url);
     }
