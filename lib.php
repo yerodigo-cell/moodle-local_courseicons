@@ -24,7 +24,7 @@
 
 declare(strict_types=1);
 
-defined('MOODLE_INTERNAL') || die();
+
 
 /**
  * Injects CSS and Preloads globally.
@@ -34,9 +34,9 @@ defined('MOODLE_INTERNAL') || die();
  */
 function local_courseicons_standard_head_html(): string {
     global $COURSE, $DB;
-    static $already_injected = false;
+    static $alreadyinjected = false;
 
-    if ($already_injected || empty($COURSE->id) || $COURSE->id <= 1) {
+    if ($alreadyinjected || empty($COURSE->id) || $COURSE->id <= 1) {
         return '';
     }
 
@@ -45,17 +45,17 @@ function local_courseicons_standard_head_html(): string {
         return '';
     }
 
-    $already_injected = true;
+    $alreadyinjected = true;
     $fs = get_file_storage();
     $html = "\n<!-- local_courseicons CSS & Preloads -->\n";
     $css = "<style type=\"text/css\">\n";
 
-    $selectors_bg = [];
-    $selectors_icon = [];
-    $selectors_header_icon = [];
-    $selectors_tile_icon = [];
-    $selectors_tile_container = [];
-    $dynamic_content = '';
+    $selectorsbg = [];
+    $selectorsicon = [];
+    $selectorsheadericon = [];
+    $selectorstileicon = [];
+    $selectorstilecontainer = [];
+    $dynamiccontent = '';
 
     foreach ($records as $record) {
         $modcontext = context_module::instance($record->cmid, IGNORE_MISSING);
@@ -64,57 +64,57 @@ function local_courseicons_standard_head_html(): string {
         }
 
         $files = $fs->get_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0, 'id', false);
-        
+
         if (!empty($files)) {
             $file = reset($files);
             $murl = moodle_url::make_pluginfile_url($modcontext->id, 'local_courseicons', 'activityicon', 0, '/', $file->get_filename());
             $murl->param('t', $record->timemodified);
             $url = $murl->out(false);
-            
+
             // Force early download.
             $html .= "<link rel=\"preload\" href=\"{$url}\" as=\"image\">\n";
-            
-            $cmid = $record->cmid;
-            
-            // Group selectors for static rules.
-            $selectors_bg[] = ".path-course-view .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer, .path-mod .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer";
-            $selectors_bg[] = ".path-course-view #module-{$cmid} .activityiconcontainer";
-            $selectors_bg[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
-            $selectors_bg[] = ".path-mod.cmid-{$cmid} .page-header-image .activityiconcontainer";
-            $selectors_bg[] = ".path-mod.cmid-{$cmid} .page-header-headings .activityiconcontainer";
 
-            $sel_icon = [
+            $cmid = $record->cmid;
+
+            // Group selectors for static rules.
+            $selectorsbg[] = ".path-course-view .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer, .path-mod .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer";
+            $selectorsbg[] = ".path-course-view #module-{$cmid} .activityiconcontainer";
+            $selectorsbg[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
+            $selectorsbg[] = ".path-mod.cmid-{$cmid} .page-header-image .activityiconcontainer";
+            $selectorsbg[] = ".path-mod.cmid-{$cmid} .page-header-headings .activityiconcontainer";
+
+            $selicon = [
                 ".path-course-view .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer img, .path-mod .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer img",
                 ".path-course-view #module-{$cmid} .activityiconcontainer img",
                 ".path-course-view #module-{$cmid} .activityinstance > a > img.activityicon",
-                ".path-course-view #module-{$cmid} .activityinstance > a > img.icon"
+                ".path-course-view #module-{$cmid} .activityinstance > a > img.icon",
             ];
-            $selectors_icon = array_merge($selectors_icon, $sel_icon);
+            $selectorsicon = array_merge($selectorsicon, $selicon);
 
-            $sel_header = [
+            $selheader = [
                 ".path-mod.cmid-{$cmid} .page-header-image img",
-                ".path-mod.cmid-{$cmid} .page-header-headings img.activityicon"
+                ".path-mod.cmid-{$cmid} .page-header-headings img.activityicon",
             ];
-            $selectors_header_icon = array_merge($selectors_header_icon, $sel_header);
+            $selectorsheadericon = array_merge($selectorsheadericon, $selheader);
 
-            $sel_tile = [".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon img"];
-            $selectors_tile_icon = array_merge($selectors_tile_icon, $sel_tile);
+            $seltile = [".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon img"];
+            $selectorstileicon = array_merge($selectorstileicon, seltile);
 
-            $selectors_tile_container[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
+            $selectorstilecontainer[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
 
             // Dynamic rule (unique URL per cmid).
-            $dynamic_content .= implode(', ', $sel_icon) . ", " . implode(', ', $sel_header) . ", " . implode(', ', $sel_tile) . " { content: url('{$url}') !important; }\n";
+            $dynamiccontent .= implode(', ', $selicon) . ", " . implode(', ', $selheader) . ", " . implode(', ', $seltile) . " { content: url('{$url}') !important; }\n";
         }
     }
 
-    if (!empty($selectors_bg)) {
+    if (!empty($selectorsbg)) {
         // Output grouped static rules once.
-        $css .= implode(",\n", $selectors_bg) . " {\n    background-color: transparent !important;\n    background: transparent !important;\n    box-shadow: none !important;\n    border: none !important;\n}\n\n";
-        $css .= implode(",\n", $selectors_icon) . " {\n    object-fit: contain !important;\n    width: 32px !important;\n    height: 32px !important;\n    filter: none !important;\n    border-radius: 0 !important;\n}\n\n";
-        $css .= implode(",\n", $selectors_header_icon) . " {\n    object-fit: contain !important;\n    width: 50px !important;\n    height: 50px !important;\n    filter: none !important;\n    border-radius: 0 !important;\n}\n\n";
-        $css .= implode(",\n", $selectors_tile_icon) . " {\n    object-fit: contain !important;\n    width: 100% !important;\n    height: 110px !important;\n    transform: scale(1.4) !important;\n    padding: 0 !important;\n    margin: 0 !important;\n    max-width: none !important;\n}\n\n";
-        $css .= implode(",\n", $selectors_tile_container) . " {\n    display: flex !important;\n    justify-content: center !important;\n    align-items: center !important;\n    width: 100% !important;\n}\n\n";
-        $css .= $dynamic_content;
+        $css .= implode(",\n", $selectorsbg) . " {\n    background-color: transparent !important;\n    background: transparent !important;\n    box-shadow: none !important;\n    border: none !important;\n}\n\n";
+        $css .= implode(",\n", $selectorsicon) . " {\n    object-fit: contain !important;\n    width: 32px !important;\n    height: 32px !important;\n    filter: none !important;\n    border-radius: 0 !important;\n}\n\n";
+        $css .= implode(",\n", $selectorsheadericon) . " {\n    object-fit: contain !important;\n    width: 50px !important;\n    height: 50px !important;\n    filter: none !important;\n    border-radius: 0 !important;\n}\n\n";
+        $css .= implode(",\n", $selectorstileicon) . " {\n    object-fit: contain !important;\n    width: 100% !important;\n    height: 110px !important;\n    transform: scale(1.4) !important;\n    padding: 0 !important;\n    margin: 0 !important;\n    max-width: none !important;\n}\n\n";
+        $css .= implode(",\n", $selectorstilecontainer) . " {\n    display: flex !important;\n    justify-content: center !important;\n    align-items: center !important;\n    width: 100% !important;\n}\n\n";
+        $css .= $dynamiccontent;
     }
 
     $css .= "</style>\n";
@@ -138,6 +138,8 @@ function local_courseicons_before_standard_html_head(): string {
 /**
  * Extends the global navigation.
  * We use this global hook to guarantee our JS is injected on the course page.
+ * 
+ * @param \global_navigation $navigation
  */
 function local_courseicons_extend_navigation(global_navigation $navigation): void {
     global $PAGE, $COURSE, $DB;
@@ -155,11 +157,11 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
     $jsloaded = true;
 
     $records = $DB->get_records('local_courseicons', ['courseid' => $COURSE->id]);
-    
+
     if (!empty($records)) {
         $icondata = [];
         $fs = get_file_storage();
-        
+
         foreach ($records as $record) {
             $modcontext = context_module::instance($record->cmid, IGNORE_MISSING);
             if (!$modcontext) {
@@ -167,7 +169,7 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
             }
 
             $files = $fs->get_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0, 'id', false);
-            
+
             if (!empty($files)) {
                 $file = reset($files);
                 $murl = moodle_url::make_pluginfile_url(
@@ -178,7 +180,7 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
                     '/',
                     $file->get_filename()
                 );
-                
+
                 $murl->param('t', $record->timemodified);
 
                 $icondata[] = [
@@ -198,6 +200,10 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
 /**
  * Extends the course navigation (Moodle 4.0+ secondary navigation).
  * This purely adds the "Customize activity icons" button for teachers.
+ * 
+ * @param \navigation_node $navigation
+ * @param \stdClass $course
+ * @param \context $context
  */
 function local_courseicons_extend_navigation_course(
     navigation_node $navigation,
@@ -220,6 +226,14 @@ function local_courseicons_extend_navigation_course(
 
 /**
  * Serves the custom activity icons files.
+ * 
+ * @param \stdClass $course
+ * @param \cm_info $cm
+ * @param \context $context
+ * @param string $filearea
+ * @param array $args
+ * @param bool $forcedownload
+ * @param array $options
  */
 function local_courseicons_pluginfile(
     $course,
@@ -249,7 +263,7 @@ function local_courseicons_pluginfile(
 
     $fs = get_file_storage();
     $filepath = $args ? '/' . implode('/', $args) . '/' : '/';
-    
+
     $file = $fs->get_file($context->id, 'local_courseicons', $filearea, $itemid, $filepath, $filename);
 
     if (!$file || $file->is_directory()) {

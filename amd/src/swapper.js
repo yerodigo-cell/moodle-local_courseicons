@@ -24,17 +24,21 @@
 define([], function() {
     return {
         init: function(icons) {
-            if (!icons || icons.length === 0) return;
+            if (!icons || icons.length === 0) {
+                return;
+            }
 
             const applyIcons = () => {
                 icons.forEach(function(icon) {
                     const wrappers = document.querySelectorAll(
-                        '#module-' + icon.cmid + ', ' + 
+                        '#module-' + icon.cmid + ', ' +
                         '.activity-item[data-id="' + icon.cmid + '"]'
                     );
-                    
+
                     wrappers.forEach(function(wrapper) {
-                        if (wrapper.dataset.courseiconApplied === icon.url) return;
+                        if (wrapper.dataset.courseiconApplied === icon.url) {
+                            return;
+                        }
 
                         const tileIcon = wrapper.querySelector('.tile-icon');
                         const m4Container = wrapper.querySelector('.activityiconcontainer');
@@ -74,7 +78,7 @@ define([], function() {
                                 img.style.setProperty('transform', 'scale(1.4)', 'important');
                                 img.style.setProperty('padding', '0', 'important');
                                 img.style.setProperty('margin', '0', 'important');
-                                img.style.setProperty('max-width', 'none', 'important'); 
+                                img.style.setProperty('max-width', 'none', 'important');
 
                                 if (tileIcon) {
                                     tileIcon.style.setProperty('display', 'flex', 'important');
@@ -88,7 +92,6 @@ define([], function() {
                                 img.style.setProperty('transform', 'none', 'important');
                                 img.style.setProperty('padding', '0', 'important');
                                 img.style.setProperty('margin', '0', 'important');
-                                
                                 m4Container.style.setProperty('display', 'flex', 'important');
                                 m4Container.style.setProperty('justify-content', 'center', 'important');
                                 m4Container.style.setProperty('align-items', 'center', 'important');
@@ -135,14 +138,14 @@ define([], function() {
                             applyIcons();
                             const container = document.querySelector('.course-content') ||
                                 document.querySelector('#region-main') || document.body;
-                            observer.observe(container, { childList: true, subtree: true });
+                            observer.observe(container, {childList: true, subtree: true});
                         }, 150);
                     }
                 });
-                
+
                 const container = document.querySelector('.course-content') ||
                     document.querySelector('#region-main') || document.body;
-                observer.observe(container, { childList: true, subtree: true });
+                observer.observe(container, {childList: true, subtree: true});
             }
         }
     };

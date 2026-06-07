@@ -34,7 +34,7 @@ namespace local_courseicons;
 class hook_listener {
     /**
      * Hook callback for standard head HTML generation.
-     * 
+     *
      * @param \core\hook\output\before_standard_head_html_generation $hook
      */
     public static function before_standard_head_html_generation(

@@ -34,7 +34,6 @@ require_once($CFG->libdir . '/formslib.php');
  * Class icon_upload_form.
  */
 class icon_upload_form extends moodleform {
-
     /**
      * Form definition.
      */
@@ -59,9 +58,9 @@ class icon_upload_form extends moodleform {
             'maxbytes' => 2097152,
             'maxfiles' => 1,
             // GIF support added.
-            'accepted_types' => ['.svg', '.png', '.jpg', '.jpeg', '.gif']
+            'accepted_types' => ['.svg', '.png', '.jpg', '.jpeg', '.gif'],
         ];
-        
+
         $mform->addElement(
             'filemanager',
             'iconfile_filemanager',

@@ -6,42 +6,46 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-.path-course-view, .path-mod .courseicons-customized-bg {
-    background-color: transparent !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
+.path-course-view .courseicons-customized-bg,
+.path-mod .courseicons-customized-bg {
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
 }
 
-.path-course-view, .path-mod .courseicons-customized-icon {
-    object-fit: contain !important;
-    width: 32px !important;
-    height: 32px !important;
-    filter: none !important;
-    border-radius: 0 !important;
+.path-course-view .courseicons-customized-icon,
+.path-mod .courseicons-customized-icon {
+    object-fit: contain;
+    width: 32px;
+    height: 32px;
+    filter: none;
+    border-radius: 0;
 }
 
-.path-course-view, .path-mod .courseicons-customized-header-icon {
-    object-fit: contain !important;
-    width: 50px !important;
-    height: 50px !important;
-    filter: none !important;
-    border-radius: 0 !important;
+.path-course-view .courseicons-customized-header-icon,
+.path-mod .courseicons-customized-header-icon {
+    object-fit: contain;
+    width: 50px;
+    height: 50px;
+    filter: none;
+    border-radius: 0;
 }
 
-.path-course-view, .path-mod .courseicons-customized-tile-icon {
-    object-fit: contain !important;
-    width: 100% !important;
-    height: 110px !important;
-    transform: scale(1.4) !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: none !important;
+.path-course-view .courseicons-customized-tile-icon,
+.path-mod .courseicons-customized-tile-icon {
+    object-fit: contain;
+    width: 100%;
+    height: 110px;
+    transform: scale(1.4);
+    padding: 0;
+    margin: 0;
+    max-width: none;
 }
 
-.path-course-view, .path-mod .courseicons-customized-tile-container {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
+.path-course-view .courseicons-customized-tile-container,
+.path-mod .courseicons-customized-tile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
