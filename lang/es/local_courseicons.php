@@ -25,7 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Acciones';
+$string['alltypes'] = 'Todos los tipos';
 $string['bulkdelete'] = 'Eliminar seleccionados';
+$string['bulkupload'] = 'Subir a los seleccionados';
 $string['choosemodule'] = 'Selecciona una actividad para cambiar su icono';
 $string['courseicons:manage'] = 'Gestionar iconos de actividad personalizados';
 $string['currenticon'] = 'Estado del icono';
@@ -43,6 +45,8 @@ $string['pluginname'] = 'Iconos de Actividad del Curso';
 $string['preview'] = 'Vista previa';
 $string['privacy:metadata'] = 'El plugin Iconos de Actividad del Curso no almacena ningún dato personal.';
 $string['savechanges'] = 'Guardar cambios';
+$string['searchactivities'] = 'Buscar actividades...';
 $string['successdeleted'] = 'El icono personalizado ha sido eliminado.';
 $string['successupdated'] = 'El icono de la actividad ha sido actualizado correctamente.';
 $string['uploadicon'] = 'Icono SVG/Imagen/GIF para: {$a}';
+$string['uploadiconbulk'] = 'Subir icono SVG/Imagen/GIF para {$a} actividades seleccionadas';

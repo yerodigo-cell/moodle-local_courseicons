@@ -51,6 +51,12 @@ class icon_upload_form extends moodleform {
         $mform->addElement('hidden', 'cmid', $cmid);
         $mform->setType('cmid', PARAM_INT);
 
+        $bulkcmids = $customdata['bulkcmids'] ?? '';
+        if (!empty($bulkcmids)) {
+            $mform->addElement('hidden', 'bulkcmids', $bulkcmids);
+            $mform->setType('bulkcmids', PARAM_SEQUENCE);
+        }
+
         $mform->addElement('header', 'general', get_string('uploadicon', 'local_courseicons', $modname));
 
         $filemanageropts = [
