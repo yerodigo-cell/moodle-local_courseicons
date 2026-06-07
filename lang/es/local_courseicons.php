@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Acciones';
+$string['bulkdelete'] = 'Eliminar seleccionados';
 $string['choosemodule'] = 'Selecciona una actividad para cambiar su icono';
 $string['courseicons:manage'] = 'Gestionar iconos de actividad personalizados';
 $string['currenticon'] = 'Estado del icono';
@@ -32,6 +33,8 @@ $string['customiconpreview'] = 'Vista previa de icono personalizado';
 $string['customized'] = 'Personalizado';
 $string['default'] = 'Por defecto';
 $string['deleteicon'] = 'Eliminar icono personalizado y volver al original';
+$string['deleteiconconfirm'] = '¿Estás seguro de que deseas eliminar este icono personalizado? Volverá a mostrarse el icono por defecto de Moodle.';
+$string['deleteselectedconfirm'] = '¿Estás seguro de que deseas eliminar los iconos personalizados de las actividades seleccionadas?';
 $string['editicon'] = 'Cambiar icono';
 $string['manageicons'] = 'Personalizar iconos de actividades';
 $string['manageicons_help'] = 'Sube archivos SVG, PNG, JPG o GIF para reemplazar los iconos por defecto de Moodle en las actividades de tu curso.';

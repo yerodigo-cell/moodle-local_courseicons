@@ -31,6 +31,7 @@ use local_courseicons\form\icon_upload_form;
 
 $courseid = required_param('id', PARAM_INT);
 $cmid = optional_param('cmid', 0, PARAM_INT);
+$action = optional_param('action', '', PARAM_ALPHANUMEXT);
 
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
@@ -44,6 +45,41 @@ $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('manageicons', 'local_courseicons'));
 $PAGE->set_heading($course->fullname);
+
+if ($action === 'delete') {
+    require_sesskey();
+    $delcmid = required_param('delcmid', PARAM_INT);
+    $DB->delete_records('local_courseicons', ['cmid' => $delcmid]);
+    $modcontext = context_module::instance($delcmid);
+    $fs = get_file_storage();
+    $fs->delete_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0);
+
+    redirect(
+        $url,
+        get_string('successdeleted', 'local_courseicons'),
+        null,
+        \core\output\notification::NOTIFY_SUCCESS
+    );
+} else if ($action === 'bulkdelete') {
+    require_sesskey();
+    $cmids = optional_param_array('cmids', [], PARAM_INT);
+    if (!empty($cmids)) {
+        $fs = get_file_storage();
+        foreach ($cmids as $delcmid) {
+            $DB->delete_records('local_courseicons', ['cmid' => $delcmid]);
+            $modcontext = context_module::instance($delcmid);
+            $fs->delete_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0);
+        }
+        redirect(
+            $url,
+            get_string('successdeleted', 'local_courseicons'),
+            null,
+            \core\output\notification::NOTIFY_SUCCESS
+        );
+    } else {
+        redirect($url);
+    }
+}
 
 if ($cmid > 0) {
     $cm = get_coursemodule_from_id('', $cmid, $course->id, false, MUST_EXIST);
@@ -142,6 +178,7 @@ if ($cmid > 0 && isset($mform)) {
 
     $table = new html_table();
     $table->head = [
+        '<input type="checkbox" id="courseicons-select-all" title="' . get_string('selectall') . '">',
         get_string('modulename', 'local_courseicons'),
         get_string('preview', 'local_courseicons'),
         get_string('currenticon', 'local_courseicons'),
@@ -169,10 +206,18 @@ if ($cmid > 0 && isset($mform)) {
         );
 
         $previewhtml = '';
+        $checkboxhtml = '';
 
         if (isset($customicons[$module->id])) {
             $record = $customicons[$module->id];
             $status = html_writer::span($strcustomized, 'badge badge-success bg-success text-white');
+
+            $checkboxhtml = html_writer::empty_tag('input', [
+                'type' => 'checkbox',
+                'name' => 'cmids[]',
+                'value' => $module->id,
+                'class' => 'courseicons-bulk-checkbox',
+            ]);
 
             // Build the preview of the uploaded image.
             $modcontext = context_module::instance($module->id);
@@ -195,6 +240,20 @@ if ($cmid > 0 && isset($mform)) {
                     'alt' => get_string('customiconpreview', 'local_courseicons'),
                     'style' => 'width: 36px; height: 36px; object-fit: contain;',
                 ]);
+
+                $delurl = new moodle_url('/local/courseicons/manage.php', [
+                    'id' => $course->id,
+                    'action' => 'delete',
+                    'delcmid' => $module->id,
+                    'sesskey' => sesskey(),
+                ]);
+
+                $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
+                $delaction = html_writer::link($delurl, $delicon, [
+                    'class' => 'courseicons-delete-single ms-2',
+                    'data-confirm' => get_string('deleteiconconfirm', 'local_courseicons'),
+                ]);
+                $previewhtml .= $delaction;
             }
         } else {
             $status = html_writer::span($strdefault, 'badge badge-secondary bg-secondary text-white');
@@ -211,11 +270,32 @@ if ($cmid > 0 && isset($mform)) {
         $modicon = $OUTPUT->pix_icon('monologo', '', $module->modname, ['class' => 'icon']);
         $modname = $modicon . ' ' . format_string($module->name);
 
-        // Add the new $previewhtml variable to the row.
-        $table->data[] = [$modname, $previewhtml, $status, $actionlink];
+        $table->data[] = [$checkboxhtml, $modname, $previewhtml, $status, $actionlink];
     }
 
+    echo html_writer::start_tag('form', [
+        'action' => new moodle_url('/local/courseicons/manage.php'),
+        'method' => 'post',
+        'id' => 'courseicons-bulk-form',
+    ]);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $course->id]);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'bulkdelete']);
+
     echo html_writer::table($table);
+
+    $bulkbtn = html_writer::empty_tag('input', [
+        'type' => 'submit',
+        'value' => get_string('bulkdelete', 'local_courseicons'),
+        'class' => 'btn btn-secondary mt-3',
+        'id' => 'courseicons-bulk-submit',
+        'disabled' => 'disabled',
+        'data-confirm' => get_string('deleteselectedconfirm', 'local_courseicons'),
+    ]);
+    echo html_writer::div($bulkbtn, 'text-start');
+    echo html_writer::end_tag('form');
+
+    $PAGE->requires->js_call_amd('local_courseicons/bulkdelete', 'init');
 }
 
 echo $OUTPUT->footer();

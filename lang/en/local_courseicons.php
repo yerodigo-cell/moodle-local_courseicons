@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Actions';
+$string['bulkdelete'] = 'Delete selected';
 $string['choosemodule'] = 'Select an activity to change its icon';
 $string['courseicons:manage'] = 'Manage custom activity icons';
 $string['currenticon'] = 'Icon status';
@@ -32,6 +33,8 @@ $string['customiconpreview'] = 'Custom icon preview';
 $string['customized'] = 'Customized';
 $string['default'] = 'Default';
 $string['deleteicon'] = 'Delete custom icon and revert to original';
+$string['deleteiconconfirm'] = 'Are you sure you want to delete this custom icon? It will revert to the default Moodle icon.';
+$string['deleteselectedconfirm'] = 'Are you sure you want to delete the custom icons for the selected activities?';
 $string['editicon'] = 'Change icon';
 $string['manageicons'] = 'Customize activity icons';
 $string['manageicons_help'] = 'Upload SVG, PNG, JPG or GIF files to replace the default Moodle icons in your course activities.';
