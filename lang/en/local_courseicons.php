@@ -26,7 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Actions';
 $string['choosemodule'] = 'Select an activity to change its icon';
+$string['courseicons:manage'] = 'Manage custom activity icons';
 $string['currenticon'] = 'Icon status';
+$string['customiconpreview'] = 'Custom icon preview';
 $string['customized'] = 'Customized';
 $string['default'] = 'Default';
 $string['deleteicon'] = 'Delete custom icon and revert to original';
@@ -36,10 +38,8 @@ $string['manageicons_help'] = 'Upload SVG, PNG, JPG or GIF files to replace the 
 $string['modulename'] = 'Activity name';
 $string['pluginname'] = 'Course Activity Icons';
 $string['preview'] = 'Icon preview';
+$string['privacy:metadata'] = 'The Course Activity Icons plugin does not store any personal data.';
 $string['savechanges'] = 'Save changes';
 $string['successdeleted'] = 'The custom icon has been deleted.';
 $string['successupdated'] = 'The activity icon has been successfully updated.';
-$string['courseicons:manage'] = 'Manage custom activity icons';
-$string['customiconpreview'] = 'Custom icon preview';
-$string['privacy:metadata'] = 'The Course Activity Icons plugin does not store any personal data.';
 $string['uploadicon'] = 'SVG/Image/GIF Icon for: {$a}';

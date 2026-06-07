@@ -26,7 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Acciones';
 $string['choosemodule'] = 'Selecciona una actividad para cambiar su icono';
+$string['courseicons:manage'] = 'Gestionar iconos de actividad personalizados';
 $string['currenticon'] = 'Estado del icono';
+$string['customiconpreview'] = 'Vista previa de icono personalizado';
 $string['customized'] = 'Personalizado';
 $string['default'] = 'Por defecto';
 $string['deleteicon'] = 'Eliminar icono personalizado y volver al original';
@@ -36,6 +38,7 @@ $string['manageicons_help'] = 'Sube archivos SVG, PNG, JPG o GIF para reemplazar
 $string['modulename'] = 'Nombre de la actividad';
 $string['pluginname'] = 'Iconos de Actividad del Curso';
 $string['preview'] = 'Vista previa';
+$string['privacy:metadata'] = 'El plugin Iconos de Actividad del Curso no almacena ningún dato personal.';
 $string['savechanges'] = 'Guardar cambios';
 $string['successdeleted'] = 'El icono personalizado ha sido eliminado.';
 $string['successupdated'] = 'El icono de la actividad ha sido actualizado correctamente.';
