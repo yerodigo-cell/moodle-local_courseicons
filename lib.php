@@ -55,8 +55,7 @@ function local_courseicons_standard_head_html(): string {
 
     $alreadyinjected = true;
     $fs = get_file_storage();
-    $html = "\n<!-- local_courseicons CSS & Preloads -->\n";
-    $css = "<style type=\"text/css\">\n";
+    $css = "\n<!-- local_courseicons CSS -->\n<style type=\"text/css\">\n";
 
     $selectorsbg = [];
     $selectorsicon = [];
@@ -85,9 +84,6 @@ function local_courseicons_standard_head_html(): string {
             );
             $murl->param('t', $record->timemodified);
             $url = $murl->out(false);
-
-            // Force early download.
-            $html .= "<link rel=\"preload\" href=\"{$url}\" as=\"image\">\n";
 
             $cmid = $record->cmid;
 
@@ -161,7 +157,7 @@ function local_courseicons_standard_head_html(): string {
     }
 
     $css .= "</style>\n";
-    $finalhtml = $html . $css;
+    $finalhtml = $css;
 
     $cache->set($COURSE->id, $finalhtml);
 
