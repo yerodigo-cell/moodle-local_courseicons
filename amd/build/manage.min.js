@@ -41,18 +41,19 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
             var updateButtonState = function() {
                 var checkedCheckboxes = checkboxes.filter(':checked');
                 var checkedCount = checkedCheckboxes.length;
-                
+
                 if (checkedCount > 0) {
                     uploadBtn.removeAttr('disabled');
-                    
+
                     var hasCustom = false;
                     checkedCheckboxes.each(function() {
                         if ($(this).data('hascustom') == 1) {
                             hasCustom = true;
-                            return false; // break loop
+                            return false; // Break loop.
                         }
+                        return true;
                     });
-                    
+
                     if (hasCustom) {
                         submitBtn.removeAttr('disabled');
                     } else {
@@ -99,14 +100,18 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
             });
 
             var submitAction = 'delete';
-            submitBtn.on('click', function() { submitAction = 'delete'; });
-            uploadBtn.on('click', function() { submitAction = 'upload'; });
+            submitBtn.on('click', function() {
+                submitAction = 'delete';
+            });
+            uploadBtn.on('click', function() {
+                submitAction = 'upload';
+            });
 
             // Bulk actions.
             bulkForm.on('submit', function(e) {
                 if (submitAction === 'upload') {
                     actionInput.val('bulkuploadform');
-                    return true; // allow normal submission.
+                    return true; // Allow normal submission.
                 }
 
                 e.preventDefault();
@@ -121,6 +126,7 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
                         bulkForm[0].submit();
                     });
                 });
+                return false;
             });
         }
     };

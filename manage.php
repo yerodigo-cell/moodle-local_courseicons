@@ -95,9 +95,9 @@ if ($action === 'bulkuploadform' && !empty($cmids) && is_array($cmids)) {
 
 if ($cmid > 0 || !empty($bulkcmids)) {
     if (!empty($bulkcmids)) {
-        $cmids_arr = explode(',', $bulkcmids);
-        $modcontext = context_module::instance($cmids_arr[0]);
-        $modname = get_string('uploadiconbulk', 'local_courseicons', count($cmids_arr));
+        $cmidslist = explode(',', $bulkcmids);
+        $modcontext = context_module::instance($cmidslist[0]);
+        $modname = get_string('uploadiconbulk', 'local_courseicons', count($cmidslist));
     } else {
         $cm = get_coursemodule_from_id('', $cmid, $course->id, false, MUST_EXIST);
         $modcontext = context_module::instance($cmid);
@@ -136,9 +136,9 @@ if ($cmid > 0 || !empty($bulkcmids)) {
     } else if ($data = $mform->get_data()) {
         if (!empty($data->deleteicon)) {
             if (!empty($bulkcmids)) {
-                $cmids_arr = explode(',', $bulkcmids);
+                $cmidslist = explode(',', $bulkcmids);
                 $fs = get_file_storage();
-                foreach ($cmids_arr as $delcmid) {
+                foreach ($cmidslist as $delcmid) {
                     $DB->delete_records('local_courseicons', ['cmid' => $delcmid]);
                     $delcontext = context_module::instance($delcmid);
                     $fs->delete_area_files($delcontext->id, 'local_courseicons', 'activityicon', 0);
@@ -171,14 +171,14 @@ if ($cmid > 0 || !empty($bulkcmids)) {
             $fs = get_file_storage();
 
             if (!empty($bulkcmids)) {
-                $cmids_arr = explode(',', $bulkcmids);
+                $cmidslist = explode(',', $bulkcmids);
                 $files = $fs->get_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0, 'id', false);
                 $sourcefile = !empty($files) ? reset($files) : null;
 
-                foreach ($cmids_arr as $savecmid) {
+                foreach ($cmidslist as $savecmid) {
                     $savecontext = context_module::instance($savecmid);
-                    
-                    if ($savecmid != $cmids_arr[0] && $sourcefile) {
+
+                    if ($savecmid != $cmidslist[0] && $sourcefile) {
                         $fs->delete_area_files($savecontext->id, 'local_courseicons', 'activityicon', 0);
                         $filerecord = [
                             'contextid' => $savecontext->id,
@@ -265,7 +265,7 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
         'type' => 'text',
         'id' => 'courseicons-search',
         'class' => 'form-control',
-        'placeholder' => get_string('searchactivities', 'local_courseicons')
+        'placeholder' => get_string('searchactivities', 'local_courseicons'),
     ]);
     echo html_writer::end_div();
 
@@ -273,7 +273,7 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
     $filteroptions = ['all' => get_string('alltypes', 'local_courseicons')] + $modnames;
     echo html_writer::select($filteroptions, 'filter', 'all', false, [
         'id' => 'courseicons-filter',
-        'class' => 'form-control custom-select form-select'
+        'class' => 'form-control custom-select form-select',
     ]);
     echo html_writer::end_div();
     echo html_writer::end_div();
@@ -358,9 +358,9 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
         }
 
         $modicon = $OUTPUT->pix_icon('monologo', '', $module->modname, ['class' => 'icon']);
-        $modname_cell = $modicon . ' ' . format_string($module->name);
+        $modnamecell = $modicon . ' ' . format_string($module->name);
 
-        $row = new html_table_row([$checkboxhtml, $modname_cell, $previewhtml, $status]);
+        $row = new html_table_row([$checkboxhtml, $modnamecell, $previewhtml, $status]);
         $row->attributes['class'] = 'courseicons-row';
         $row->attributes['data-modname'] = $module->modname;
         $row->attributes['data-name'] = format_string($module->name);
@@ -374,7 +374,12 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
     ]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $course->id]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
-    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'id' => 'courseicons-bulk-action', 'value' => 'bulkdelete']);
+    echo html_writer::empty_tag('input', [
+        'type' => 'hidden',
+        'name' => 'action',
+        'id' => 'courseicons-bulk-action',
+        'value' => 'bulkdelete',
+    ]);
 
     echo html_writer::table($table);
 
