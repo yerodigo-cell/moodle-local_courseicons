@@ -284,7 +284,6 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
         get_string('modulename', 'local_courseicons'),
         get_string('preview', 'local_courseicons'),
         get_string('currenticon', 'local_courseicons'),
-        get_string('actions', 'local_courseicons'),
     ];
     $table->attributes['class'] = 'generaltable table table-striped align-middle';
 
@@ -294,17 +293,6 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
         if (in_array($module->modname, $ignoredmodules) || !$module->has_view()) {
             continue;
         }
-
-        $editurl = new moodle_url('/local/courseicons/manage.php', [
-            'id' => $course->id,
-            'cmid' => $module->id,
-        ]);
-
-        $actionlink = html_writer::link(
-            $editurl,
-            $strediticon,
-            ['class' => 'btn btn-sm btn-primary']
-        );
 
         $previewhtml = '';
 
@@ -372,7 +360,7 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
         $modicon = $OUTPUT->pix_icon('monologo', '', $module->modname, ['class' => 'icon']);
         $modname_cell = $modicon . ' ' . format_string($module->name);
 
-        $row = new html_table_row([$checkboxhtml, $modname_cell, $previewhtml, $status, $actionlink]);
+        $row = new html_table_row([$checkboxhtml, $modname_cell, $previewhtml, $status]);
         $row->attributes['class'] = 'courseicons-row';
         $row->attributes['data-modname'] = $module->modname;
         $row->attributes['data-name'] = format_string($module->name);
