@@ -77,30 +77,30 @@ function local_courseicons_standard_head_html(): string {
             $cmid = $record->cmid;
             
             // Group selectors for static rules.
-            $selectors_bg[] = ".path-local-courseicons .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer";
-            $selectors_bg[] = ".path-local-courseicons #module-{$cmid} .activityiconcontainer";
-            $selectors_bg[] = ".path-local-courseicons li.subtile[data-id=\"{$cmid}\"] .tile-icon";
-            $selectors_bg[] = ".path-local-courseicons.cmid-{$cmid} .page-header-image .activityiconcontainer";
-            $selectors_bg[] = ".path-local-courseicons.cmid-{$cmid} .page-header-headings .activityiconcontainer";
+            $selectors_bg[] = ".path-course-view .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer, .path-mod .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer";
+            $selectors_bg[] = ".path-course-view #module-{$cmid} .activityiconcontainer";
+            $selectors_bg[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
+            $selectors_bg[] = ".path-mod.cmid-{$cmid} .page-header-image .activityiconcontainer";
+            $selectors_bg[] = ".path-mod.cmid-{$cmid} .page-header-headings .activityiconcontainer";
 
             $sel_icon = [
-                ".path-local-courseicons .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer img",
-                ".path-local-courseicons #module-{$cmid} .activityiconcontainer img",
-                ".path-local-courseicons #module-{$cmid} .activityinstance > a > img.activityicon",
-                ".path-local-courseicons #module-{$cmid} .activityinstance > a > img.icon"
+                ".path-course-view .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer img, .path-mod .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer img",
+                ".path-course-view #module-{$cmid} .activityiconcontainer img",
+                ".path-course-view #module-{$cmid} .activityinstance > a > img.activityicon",
+                ".path-course-view #module-{$cmid} .activityinstance > a > img.icon"
             ];
             $selectors_icon = array_merge($selectors_icon, $sel_icon);
 
             $sel_header = [
-                ".path-local-courseicons.cmid-{$cmid} .page-header-image img",
-                ".path-local-courseicons.cmid-{$cmid} .page-header-headings img.activityicon"
+                ".path-mod.cmid-{$cmid} .page-header-image img",
+                ".path-mod.cmid-{$cmid} .page-header-headings img.activityicon"
             ];
             $selectors_header_icon = array_merge($selectors_header_icon, $sel_header);
 
-            $sel_tile = [".path-local-courseicons li.subtile[data-id=\"{$cmid}\"] .tile-icon img"];
+            $sel_tile = [".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon img"];
             $selectors_tile_icon = array_merge($selectors_tile_icon, $sel_tile);
 
-            $selectors_tile_container[] = ".path-local-courseicons li.subtile[data-id=\"{$cmid}\"] .tile-icon";
+            $selectors_tile_container[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
 
             // Dynamic rule (unique URL per cmid).
             $dynamic_content .= implode(', ', $sel_icon) . ", " . implode(', ', $sel_header) . ", " . implode(', ', $sel_tile) . " { content: url('{$url}') !important; }\n";
@@ -147,7 +147,6 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
     }
 
     // Add plugin namespace class to body to satisfy Moodle CSS namespacing requirements.
-    $PAGE->add_body_class('path-local-courseicons');
 
     static $jsloaded = false;
     if ($jsloaded) {

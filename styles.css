@@ -6,14 +6,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-.path-local-courseicons .courseicons-customized-bg {
+.path-course-view, .path-mod .courseicons-customized-bg {
     background-color: transparent !important;
     background: transparent !important;
     box-shadow: none !important;
     border: none !important;
 }
 
-.path-local-courseicons .courseicons-customized-icon {
+.path-course-view, .path-mod .courseicons-customized-icon {
     object-fit: contain !important;
     width: 32px !important;
     height: 32px !important;
@@ -21,7 +21,7 @@
     border-radius: 0 !important;
 }
 
-.path-local-courseicons .courseicons-customized-header-icon {
+.path-course-view, .path-mod .courseicons-customized-header-icon {
     object-fit: contain !important;
     width: 50px !important;
     height: 50px !important;
@@ -29,7 +29,7 @@
     border-radius: 0 !important;
 }
 
-.path-local-courseicons .courseicons-customized-tile-icon {
+.path-course-view, .path-mod .courseicons-customized-tile-icon {
     object-fit: contain !important;
     width: 100% !important;
     height: 110px !important;
@@ -39,7 +39,7 @@
     max-width: none !important;
 }
 
-.path-local-courseicons .courseicons-customized-tile-container {
+.path-course-view, .path-mod .courseicons-customized-tile-container {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
