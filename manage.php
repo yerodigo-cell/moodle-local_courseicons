@@ -305,18 +305,17 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
         );
 
         $previewhtml = '';
-        $checkboxhtml = '';
+
+        $checkboxhtml = html_writer::empty_tag('input', [
+            'type' => 'checkbox',
+            'name' => 'cmids[]',
+            'value' => $module->id,
+            'class' => 'courseicons-bulk-checkbox',
+        ]);
 
         if (isset($customicons[$module->id])) {
             $record = $customicons[$module->id];
             $status = html_writer::span($strcustomized, 'badge badge-success bg-success text-white');
-
-            $checkboxhtml = html_writer::empty_tag('input', [
-                'type' => 'checkbox',
-                'name' => 'cmids[]',
-                'value' => $module->id,
-                'class' => 'courseicons-bulk-checkbox',
-            ]);
 
             // Build the preview of the uploaded image.
             $modcontext = context_module::instance($module->id);
