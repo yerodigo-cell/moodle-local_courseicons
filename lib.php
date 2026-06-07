@@ -74,16 +74,23 @@ function local_courseicons_standard_head_html(): string {
 
         if (!empty($files)) {
             $file = reset($files);
-            $murl = moodle_url::make_pluginfile_url(
-                $modcontext->id,
-                'local_courseicons',
-                'activityicon',
-                0,
-                '/',
-                $file->get_filename()
-            );
-            $murl->param('t', $record->timemodified);
-            $url = $murl->out(false);
+            // Limit Base64 encoding to 100KB to avoid massive HTML payloads.
+            if ($file->get_filesize() <= 102400) {
+                $mimetype = $file->get_mimetype();
+                $base64 = base64_encode($file->get_content());
+                $url = "data:{$mimetype};base64,{$base64}";
+            } else {
+                $murl = moodle_url::make_pluginfile_url(
+                    $modcontext->id,
+                    'local_courseicons',
+                    'activityicon',
+                    0,
+                    '/',
+                    $file->get_filename()
+                );
+                $murl->param('t', $record->timemodified);
+                $url = $murl->out(false);
+            }
 
             $cmid = $record->cmid;
 
