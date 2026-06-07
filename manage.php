@@ -186,7 +186,7 @@ if ($cmid > 0 && isset($mform)) {
                 $murl->param('t', $record->timemodified); // To avoid caching.
                 $previewhtml = html_writer::empty_tag('img', [
                     'src' => $murl->out(false),
-                    'alt' => 'Custom icon preview',
+                    'alt' => get_string('customiconpreview', 'local_courseicons'),
                     'style' => 'width: 36px; height: 36px; object-fit: contain;'
                 ]);
             }

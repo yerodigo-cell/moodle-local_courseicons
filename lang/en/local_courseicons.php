@@ -39,4 +39,7 @@ $string['preview'] = 'Icon preview';
 $string['savechanges'] = 'Save changes';
 $string['successdeleted'] = 'The custom icon has been deleted.';
 $string['successupdated'] = 'The activity icon has been successfully updated.';
+$string['courseicons:manage'] = 'Manage custom activity icons';
+$string['customiconpreview'] = 'Custom icon preview';
+$string['privacy:metadata'] = 'The Course Activity Icons plugin does not store any personal data.';
 $string['uploadicon'] = 'SVG/Image/GIF Icon for: {$a}';

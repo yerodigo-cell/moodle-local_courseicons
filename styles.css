@@ -1,0 +1,47 @@
+/*
+ * CSS for local_courseicons.
+ *
+ * @package    local_courseicons
+ * @copyright  2026 Yeison Díaz
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+.path-local-courseicons .courseicons-customized-bg {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.path-local-courseicons .courseicons-customized-icon {
+    object-fit: contain !important;
+    width: 32px !important;
+    height: 32px !important;
+    filter: none !important;
+    border-radius: 0 !important;
+}
+
+.path-local-courseicons .courseicons-customized-header-icon {
+    object-fit: contain !important;
+    width: 50px !important;
+    height: 50px !important;
+    filter: none !important;
+    border-radius: 0 !important;
+}
+
+.path-local-courseicons .courseicons-customized-tile-icon {
+    object-fit: contain !important;
+    width: 100% !important;
+    height: 110px !important;
+    transform: scale(1.4) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+}
+
+.path-local-courseicons .courseicons-customized-tile-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+}

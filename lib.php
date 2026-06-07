@@ -50,6 +50,13 @@ function local_courseicons_standard_head_html(): string {
     $html = "\n<!-- local_courseicons CSS & Preloads -->\n";
     $css = "<style type=\"text/css\">\n";
 
+    $selectors_bg = [];
+    $selectors_icon = [];
+    $selectors_header_icon = [];
+    $selectors_tile_icon = [];
+    $selectors_tile_container = [];
+    $dynamic_content = '';
+
     foreach ($records as $record) {
         $modcontext = context_module::instance($record->cmid, IGNORE_MISSING);
         if (!$modcontext) {
@@ -67,63 +74,47 @@ function local_courseicons_standard_head_html(): string {
             // Force early download.
             $html .= "<link rel=\"preload\" href=\"{$url}\" as=\"image\">\n";
             
-            // Instant CSS visual replacement (Browser native).
-            $css .= "
-/* Activity {$record->cmid} - Transparent backgrounds (Course page and activity interior) */
-.activity-item[data-id=\"{$record->cmid}\"] .activityiconcontainer,
-#module-{$record->cmid} .activityiconcontainer,
-li.subtile[data-id=\"{$record->cmid}\"] .tile-icon,
-body.cmid-{$record->cmid} .page-header-image .activityiconcontainer,
-body.cmid-{$record->cmid} .page-header-headings .activityiconcontainer {
-    background-color: transparent !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-}
+            $cmid = $record->cmid;
+            
+            // Group selectors for static rules.
+            $selectors_bg[] = ".path-local-courseicons .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer";
+            $selectors_bg[] = ".path-local-courseicons #module-{$cmid} .activityiconcontainer";
+            $selectors_bg[] = ".path-local-courseicons li.subtile[data-id=\"{$cmid}\"] .tile-icon";
+            $selectors_bg[] = ".path-local-courseicons.cmid-{$cmid} .page-header-image .activityiconcontainer";
+            $selectors_bg[] = ".path-local-courseicons.cmid-{$cmid} .page-header-headings .activityiconcontainer";
 
-/* FIX 1.27: Strict selectors so they don't bleed to Action Menus or Group Menus */
-.activity-item[data-id=\"{$record->cmid}\"] .activityiconcontainer img,
-#module-{$record->cmid} .activityiconcontainer img,
-#module-{$record->cmid} .activityinstance > a > img.activityicon,
-#module-{$record->cmid} .activityinstance > a > img.icon {
-    content: url('{$url}') !important;
-    object-fit: contain !important;
-    width: 32px !important;
-    height: 32px !important;
-    filter: none !important;
-    border-radius: 0 !important;
-}
+            $sel_icon = [
+                ".path-local-courseicons .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer img",
+                ".path-local-courseicons #module-{$cmid} .activityiconcontainer img",
+                ".path-local-courseicons #module-{$cmid} .activityinstance > a > img.activityicon",
+                ".path-local-courseicons #module-{$cmid} .activityinstance > a > img.icon"
+            ];
+            $selectors_icon = array_merge($selectors_icon, $sel_icon);
 
-/* FIX 1.28: Large icon in the header INSIDE the activity page */
-body.cmid-{$record->cmid} .page-header-image img,
-body.cmid-{$record->cmid} .page-header-headings img.activityicon {
-    content: url('{$url}') !important;
-    object-fit: contain !important;
-    width: 50px !important;
-    height: 50px !important;
-    filter: none !important;
-    border-radius: 0 !important;
-}
+            $sel_header = [
+                ".path-local-courseicons.cmid-{$cmid} .page-header-image img",
+                ".path-local-courseicons.cmid-{$cmid} .page-header-headings img.activityicon"
+            ];
+            $selectors_header_icon = array_merge($selectors_header_icon, $sel_header);
 
-li.subtile[data-id=\"{$record->cmid}\"] .tile-icon img {
-    content: url('{$url}') !important;
-    object-fit: contain !important;
-    width: 100% !important;
-    height: 110px !important;
-    transform: scale(1.4) !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: none !important;
-}
+            $sel_tile = [".path-local-courseicons li.subtile[data-id=\"{$cmid}\"] .tile-icon img"];
+            $selectors_tile_icon = array_merge($selectors_tile_icon, $sel_tile);
 
-li.subtile[data-id=\"{$record->cmid}\"] .tile-icon {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
-}
-";
+            $selectors_tile_container[] = ".path-local-courseicons li.subtile[data-id=\"{$cmid}\"] .tile-icon";
+
+            // Dynamic rule (unique URL per cmid).
+            $dynamic_content .= implode(', ', $sel_icon) . ", " . implode(', ', $sel_header) . ", " . implode(', ', $sel_tile) . " { content: url('{$url}') !important; }\n";
         }
+    }
+
+    if (!empty($selectors_bg)) {
+        // Output grouped static rules once.
+        $css .= implode(",\n", $selectors_bg) . " {\n    background-color: transparent !important;\n    background: transparent !important;\n    box-shadow: none !important;\n    border: none !important;\n}\n\n";
+        $css .= implode(",\n", $selectors_icon) . " {\n    object-fit: contain !important;\n    width: 32px !important;\n    height: 32px !important;\n    filter: none !important;\n    border-radius: 0 !important;\n}\n\n";
+        $css .= implode(",\n", $selectors_header_icon) . " {\n    object-fit: contain !important;\n    width: 50px !important;\n    height: 50px !important;\n    filter: none !important;\n    border-radius: 0 !important;\n}\n\n";
+        $css .= implode(",\n", $selectors_tile_icon) . " {\n    object-fit: contain !important;\n    width: 100% !important;\n    height: 110px !important;\n    transform: scale(1.4) !important;\n    padding: 0 !important;\n    margin: 0 !important;\n    max-width: none !important;\n}\n\n";
+        $css .= implode(",\n", $selectors_tile_container) . " {\n    display: flex !important;\n    justify-content: center !important;\n    align-items: center !important;\n    width: 100% !important;\n}\n\n";
+        $css .= $dynamic_content;
     }
 
     $css .= "</style>\n";
@@ -131,11 +122,16 @@ li.subtile[data-id=\"{$record->cmid}\"] .tile-icon {
 }
 
 /**
- * Compatibility alias to ensure injection in different Moodle versions.
+ * Compatibility alias to ensure injection in older Moodle versions.
  *
  * @return string
  */
 function local_courseicons_before_standard_html_head(): string {
+    global $CFG;
+    // Prevent double execution in Moodle >= 4.4, which uses the Hooks API instead.
+    if (!empty($CFG->branch) && $CFG->branch >= '404') {
+        return '';
+    }
     return local_courseicons_standard_head_html();
 }
 
@@ -149,6 +145,9 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
     if (empty($COURSE->id) || $COURSE->id <= 1) {
         return;
     }
+
+    // Add plugin namespace class to body to satisfy Moodle CSS namespacing requirements.
+    $PAGE->add_body_class('path-local-courseicons');
 
     static $jsloaded = false;
     if ($jsloaded) {
