@@ -109,11 +109,36 @@ function local_courseicons_standard_head_html(): string {
 
     if (!empty($selectorsbg)) {
         // Output grouped static rules once.
-        $css .= implode(",\n", $selectorsbg) . " {\n    background-color: transparent !important;\n    background: transparent !important;\n    box-shadow: none !important;\n    border: none !important;\n}\n\n";
-        $css .= implode(",\n", $selectorsicon) . " {\n    object-fit: contain !important;\n    width: 32px !important;\n    height: 32px !important;\n    filter: none !important;\n    border-radius: 0 !important;\n}\n\n";
-        $css .= implode(",\n", $selectorsheadericon) . " {\n    object-fit: contain !important;\n    width: 50px !important;\n    height: 50px !important;\n    filter: none !important;\n    border-radius: 0 !important;\n}\n\n";
-        $css .= implode(",\n", $selectorstileicon) . " {\n    object-fit: contain !important;\n    width: 100% !important;\n    height: 110px !important;\n    transform: scale(1.4) !important;\n    padding: 0 !important;\n    margin: 0 !important;\n    max-width: none !important;\n}\n\n";
-        $css .= implode(",\n", $selectorstilecontainer) . " {\n    display: flex !important;\n    justify-content: center !important;\n    align-items: center !important;\n    width: 100% !important;\n}\n\n";
+        $css .= implode(",\n", $selectorsbg) . " {\n" .
+            "    background-color: transparent !important;\n" .
+            "    background: transparent !important;\n" .
+            "    box-shadow: none !important;\n" .
+            "    border: none !important;\n}\n\n";
+        $css .= implode(",\n", $selectorsicon) . " {\n" .
+            "    object-fit: contain !important;\n" .
+            "    width: 32px !important;\n" .
+            "    height: 32px !important;\n" .
+            "    filter: none !important;\n" .
+            "    border-radius: 0 !important;\n}\n\n";
+        $css .= implode(",\n", $selectorsheadericon) . " {\n" .
+            "    object-fit: contain !important;\n" .
+            "    width: 50px !important;\n" .
+            "    height: 50px !important;\n" .
+            "    filter: none !important;\n" .
+            "    border-radius: 0 !important;\n}\n\n";
+        $css .= implode(",\n", $selectorstileicon) . " {\n" .
+            "    object-fit: contain !important;\n" .
+            "    width: 100% !important;\n" .
+            "    height: 110px !important;\n" .
+            "    transform: scale(1.4) !important;\n" .
+            "    padding: 0 !important;\n" .
+            "    margin: 0 !important;\n" .
+            "    max-width: none !important;\n}\n\n";
+        $css .= implode(",\n", $selectorstilecontainer) . " {\n" .
+            "    display: flex !important;\n" .
+            "    justify-content: center !important;\n" .
+            "    align-items: center !important;\n" .
+            "    width: 100% !important;\n}\n\n";
         $css .= $dynamiccontent;
     }
 
@@ -138,7 +163,7 @@ function local_courseicons_before_standard_html_head(): string {
 /**
  * Extends the global navigation.
  * We use this global hook to guarantee our JS is injected on the course page.
- * 
+ *
  * @param \global_navigation $navigation
  */
 function local_courseicons_extend_navigation(global_navigation $navigation): void {
@@ -200,7 +225,7 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
 /**
  * Extends the course navigation (Moodle 4.0+ secondary navigation).
  * This purely adds the "Customize activity icons" button for teachers.
- * 
+ *
  * @param \navigation_node $navigation
  * @param \stdClass $course
  * @param \context $context
@@ -226,7 +251,7 @@ function local_courseicons_extend_navigation_course(
 
 /**
  * Serves the custom activity icons files.
- * 
+ *
  * @param \stdClass $course
  * @param \cm_info $cm
  * @param \context $context
