@@ -107,7 +107,7 @@ function local_courseicons_standard_head_html(): string {
             $selectorsheadericon = array_merge($selectorsheadericon, $selheader);
 
             $seltile = [".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon img"];
-            $selectorstileicon = array_merge($selectorstileicon, seltile);
+            $selectorstileicon = array_merge($selectorstileicon, $seltile);
 
             $selectorstilecontainer[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
 
