@@ -306,11 +306,13 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
 
         $previewhtml = '';
 
+        $hascustom = isset($customicons[$module->id]) ? 1 : 0;
         $checkboxhtml = html_writer::empty_tag('input', [
             'type' => 'checkbox',
             'name' => 'cmids[]',
             'value' => $module->id,
             'class' => 'courseicons-bulk-checkbox',
+            'data-hascustom' => $hascustom,
         ]);
 
         if (isset($customicons[$module->id])) {

@@ -39,10 +39,25 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
             filterSelect.on('change', filterTable);
 
             var updateButtonState = function() {
-                var checkedCount = checkboxes.filter(':checked').length;
+                var checkedCheckboxes = checkboxes.filter(':checked');
+                var checkedCount = checkedCheckboxes.length;
+                
                 if (checkedCount > 0) {
-                    submitBtn.removeAttr('disabled');
                     uploadBtn.removeAttr('disabled');
+                    
+                    var hasCustom = false;
+                    checkedCheckboxes.each(function() {
+                        if ($(this).data('hascustom') == 1) {
+                            hasCustom = true;
+                            return false; // break loop
+                        }
+                    });
+                    
+                    if (hasCustom) {
+                        submitBtn.removeAttr('disabled');
+                    } else {
+                        submitBtn.attr('disabled', 'disabled');
+                    }
                 } else {
                     submitBtn.attr('disabled', 'disabled');
                     uploadBtn.attr('disabled', 'disabled');
