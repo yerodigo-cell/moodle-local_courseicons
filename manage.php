@@ -54,6 +54,8 @@ if ($action === 'delete') {
     $fs = get_file_storage();
     $fs->delete_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0);
 
+    cache::make('local_courseicons', 'course_css')->delete($course->id);
+
     redirect(
         $url,
         get_string('successdeleted', 'local_courseicons'),
@@ -70,6 +72,9 @@ if ($action === 'delete') {
             $modcontext = context_module::instance($delcmid);
             $fs->delete_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0);
         }
+
+        cache::make('local_courseicons', 'course_css')->delete($course->id);
+
         redirect(
             $url,
             get_string('successdeleted', 'local_courseicons'),
@@ -118,6 +123,8 @@ if ($cmid > 0) {
             $fs = get_file_storage();
             $fs->delete_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0);
 
+            cache::make('local_courseicons', 'course_css')->delete($course->id);
+
             redirect(
                 $url,
                 get_string('successdeleted', 'local_courseicons'),
@@ -147,6 +154,8 @@ if ($cmid > 0) {
                 $record->timecreated = time();
                 $DB->insert_record('local_courseicons', $record);
             }
+
+            cache::make('local_courseicons', 'course_css')->delete($course->id);
 
             redirect(
                 $url,

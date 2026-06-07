@@ -40,8 +40,16 @@ function local_courseicons_standard_head_html(): string {
         return '';
     }
 
+    $cache = cache::make('local_courseicons', 'course_css');
+    $cachedhtml = $cache->get($COURSE->id);
+    if ($cachedhtml !== false) {
+        $alreadyinjected = true;
+        return $cachedhtml === 'empty' ? '' : $cachedhtml;
+    }
+
     $records = $DB->get_records('local_courseicons', ['courseid' => $COURSE->id]);
     if (empty($records)) {
+        $cache->set($COURSE->id, 'empty');
         return '';
     }
 
@@ -153,7 +161,11 @@ function local_courseicons_standard_head_html(): string {
     }
 
     $css .= "</style>\n";
-    return $html . $css;
+    $finalhtml = $html . $css;
+
+    $cache->set($COURSE->id, $finalhtml);
+
+    return $finalhtml;
 }
 
 /**
