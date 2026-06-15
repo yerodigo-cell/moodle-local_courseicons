@@ -1,0 +1,27 @@
+name: Release Moodle Plugin
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: courseicons
+
+      - name: Build ZIP file
+        run: |
+          # Exclude git and github action folders to keep the zip clean
+          zip -r local_courseicons.zip courseicons -x "courseicons/.git/*" "courseicons/.github/*" "courseicons/.gitignore"
+
+      - name: Attach ZIP to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: local_courseicons.zip
