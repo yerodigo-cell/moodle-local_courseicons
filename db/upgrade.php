@@ -34,7 +34,7 @@ function xmldb_local_courseicons_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2026061416) {
+    if ($oldversion < 2026061400) {
         // Define table local_courseicons_def to be created.
         $table = new xmldb_table('local_courseicons_def');
 
@@ -58,7 +58,7 @@ function xmldb_local_courseicons_upgrade($oldversion) {
         }
 
         // Courseicons savepoint reached.
-        upgrade_plugin_savepoint(true, 2026061416, 'local', 'courseicons');
+        upgrade_plugin_savepoint(true, 2026061400, 'local', 'courseicons');
     }
 
     return true;
