@@ -412,7 +412,11 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
             'id' => $course->id,
             'defmodname' => $mname,
         ]);
-        $actionhtml = html_writer::link($editurl, get_string('setdefaulticon', 'local_courseicons'), ['class' => 'btn btn-sm btn-outline-primary']);
+        $actionhtml = html_writer::link(
+            $editurl,
+            get_string('setdefaulticon', 'local_courseicons'),
+            ['class' => 'btn btn-sm btn-outline-primary']
+        );
 
         $modicon = $OUTPUT->pix_icon('monologo', '', $mname, ['class' => 'icon']);
         $modnamecell = $modicon . ' ' . format_string($pluginname);
@@ -422,7 +426,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     }
 
     echo html_writer::table($deftable);
-    echo html_writer::end_div(); // End Tab 1
+    echo html_writer::end_div(); // End Tab 1.
 
     // Tab 2: Individual Icons.
     echo html_writer::start_div('tab-pane fade', [
@@ -457,7 +461,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         html_writer::empty_tag('input', [
             'type' => 'checkbox',
             'id' => 'courseicons-select-all',
-            'title' => get_string('selectall')
+            'title' => get_string('selectall'),
         ]),
         get_string('modulename', 'local_courseicons'),
         get_string('preview', 'local_courseicons'),
