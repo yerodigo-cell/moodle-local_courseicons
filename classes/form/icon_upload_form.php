@@ -51,13 +51,23 @@ class icon_upload_form extends moodleform {
         $mform->addElement('hidden', 'cmid', $cmid);
         $mform->setType('cmid', PARAM_INT);
 
+        $defmodname = $customdata['defmodname'] ?? '';
+        if (!empty($defmodname)) {
+            $mform->addElement('hidden', 'defmodname', $defmodname);
+            $mform->setType('defmodname', PARAM_ALPHANUMEXT);
+        }
+
         $bulkcmids = $customdata['bulkcmids'] ?? '';
         if (!empty($bulkcmids)) {
             $mform->addElement('hidden', 'bulkcmids', $bulkcmids);
             $mform->setType('bulkcmids', PARAM_SEQUENCE);
         }
 
-        $mform->addElement('header', 'general', get_string('uploadicon', 'local_courseicons', $modname));
+        if (!empty($defmodname)) {
+            $mform->addElement('header', 'general', get_string('uploaddefaulticon', 'local_courseicons', $modname));
+        } else {
+            $mform->addElement('header', 'general', get_string('uploadicon', 'local_courseicons', $modname));
+        }
 
         $filemanageropts = [
             'subdirs' => 0,
@@ -75,7 +85,11 @@ class icon_upload_form extends moodleform {
             $filemanageropts
         );
 
-        $mform->addElement('checkbox', 'deleteicon', get_string('deleteicon', 'local_courseicons'));
+        if (!empty($defmodname)) {
+            $mform->addElement('checkbox', 'deleteicon', get_string('deletedefault', 'local_courseicons'));
+        } else {
+            $mform->addElement('checkbox', 'deleteicon', get_string('deleteicon', 'local_courseicons'));
+        }
 
         $this->add_action_buttons(true, get_string('savechanges', 'local_courseicons'));
     }

@@ -23,22 +23,55 @@
 
 define([], function() {
     return {
-        init: function(icons) {
-            if (!icons || icons.length === 0) {
+        init: function(icons, defaults) {
+            if ((!icons || icons.length === 0) && (!defaults || defaults.length === 0)) {
                 return;
             }
 
             const applyIcons = () => {
-                icons.forEach(function(icon) {
-                    const wrappers = document.querySelectorAll(
-                        '#module-' + icon.cmid + ', ' +
-                        '.activity-item[data-id="' + icon.cmid + '"]'
-                    );
+                // Process defaults first so individual icons can overwrite them.
+                if (defaults && defaults.length > 0) {
+                    defaults.forEach(function(def) {
+                        const defWrappers = document.querySelectorAll(
+                            '.activity-item.modtype_' + def.modname + ', ' +
+                            'li.activity.' + def.modname + ', ' +
+                            'li.subtile.' + def.modname + ', ' +
+                            '.path-mod-' + def.modname + ' .page-header-image, ' +
+                            '.path-mod-' + def.modname + ' .page-header-headings'
+                        );
 
-                    wrappers.forEach(function(wrapper) {
-                        if (wrapper.dataset.courseiconApplied === icon.url) {
-                            return;
-                        }
+                        defWrappers.forEach(function(wrapper) {
+                            // Don't overwrite if an individual icon was already applied.
+                            if (wrapper.dataset.courseiconIndividual) {
+                                return;
+                            }
+                            applyToWrapper(wrapper, def.url);
+                        });
+                    });
+                }
+
+                if (icons && icons.length > 0) {
+                    icons.forEach(function(icon) {
+                        const wrappers = document.querySelectorAll(
+                            '#module-' + icon.cmid + ', ' +
+                            '.activity-item[data-id="' + icon.cmid + '"], ' +
+                            'li.subtile[data-id="' + icon.cmid + '"], ' +
+                            '.path-mod.cmid-' + icon.cmid + ' .page-header-image, ' +
+                            '.path-mod.cmid-' + icon.cmid + ' .page-header-headings'
+                        );
+
+                        wrappers.forEach(function(wrapper) {
+                            wrapper.dataset.courseiconIndividual = "1";
+                            applyToWrapper(wrapper, icon.url);
+                        });
+                    });
+                }
+            };
+
+            const applyToWrapper = (wrapper, url) => {
+                if (wrapper.dataset.courseiconApplied === url) {
+                    return;
+                }
 
                         const tileIcon = wrapper.querySelector('.tile-icon');
                         const m4Container = wrapper.querySelector('.activityiconcontainer');
@@ -66,7 +99,7 @@ define([], function() {
 
                         if (img) {
                             // Synchronous load without delays or opacities. CSS already did the visual work.
-                            img.src = icon.url;
+                            img.src = url;
                             img.srcset = '';
                             img.style.setProperty('filter', 'none', 'important');
                             img.style.setProperty('object-fit', 'contain', 'important');
@@ -109,9 +142,7 @@ define([], function() {
                             }
                         }
 
-                        wrapper.dataset.courseiconApplied = icon.url;
-                    });
-                });
+                        wrapper.dataset.courseiconApplied = url;
             };
 
             if (document.readyState === 'loading') {

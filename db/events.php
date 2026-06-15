@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version details.
+ * Event observers for local_courseicons.
  *
  * @package    local_courseicons
  * @copyright  2026 Yeison Díaz
@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_courseicons';
-$plugin->version   = 2026061419; // The current plugin version (YYYYMMDDXX).
-$plugin->requires  = 2022041900; // Requires this Moodle version (4.0).
-$plugin->component = 'local_courseicons'; // Full name of the plugin (used for diagnostics).
-$plugin->release   = 'v1.2.3';
-$plugin->maturity  = MATURITY_STABLE;
+$observers = [
+    [
+        'eventname'   => '\core\event\course_restored',
+        'callback'    => 'local_courseicons\hook_listener::course_restored',
+    ],
+];

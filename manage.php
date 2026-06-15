@@ -31,6 +31,7 @@ use local_courseicons\form\icon_upload_form;
 
 $courseid = required_param('id', PARAM_INT);
 $cmid = optional_param('cmid', 0, PARAM_INT);
+$defmodname = optional_param('defmodname', '', PARAM_ALPHANUMEXT);
 $action = optional_param('action', '', PARAM_ALPHANUMEXT);
 
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
@@ -54,6 +55,21 @@ if ($action === 'delete') {
     $fs = get_file_storage();
     $fs->delete_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0);
 
+    cache::make('local_courseicons', 'course_css')->delete($course->id);
+
+    redirect(
+        $url,
+        get_string('successdeleted', 'local_courseicons'),
+        null,
+        \core\output\notification::NOTIFY_SUCCESS
+    );
+} else if ($action === 'deletedefault' && !empty($defmodname)) {
+    require_sesskey();
+    if ($defrecord = $DB->get_record('local_courseicons_def', ['courseid' => $course->id, 'modname' => $defmodname])) {
+        $DB->delete_records('local_courseicons_def', ['id' => $defrecord->id]);
+        $fs = get_file_storage();
+        $fs->delete_area_files($context->id, 'local_courseicons', 'defaulticon', $defrecord->id);
+    }
     cache::make('local_courseicons', 'course_css')->delete($course->id);
 
     redirect(
@@ -93,14 +109,32 @@ if ($action === 'bulkuploadform' && !empty($cmids) && is_array($cmids)) {
     $bulkcmids = implode(',', $cmids);
 }
 
-if ($cmid > 0 || !empty($bulkcmids)) {
-    if (!empty($bulkcmids)) {
+if ($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) {
+    if (!empty($defmodname)) {
+        $defrecord = $DB->get_record('local_courseicons_def', ['courseid' => $course->id, 'modname' => $defmodname]);
+        if (!$defrecord) {
+            $defrecord = new \stdClass();
+            $defrecord->courseid = $course->id;
+            $defrecord->modname = $defmodname;
+            $defrecord->timecreated = time();
+            $defrecord->timemodified = time();
+            $defrecord->id = $DB->insert_record('local_courseicons_def', $defrecord);
+        }
+        $modcontext = $context;
+        $filearea = 'defaulticon';
+        $fileitemid = $defrecord->id;
+        $modname = get_string('pluginname', 'mod_' . $defmodname);
+    } else if (!empty($bulkcmids)) {
         $cmidslist = explode(',', $bulkcmids);
         $modcontext = context_module::instance($cmidslist[0]);
+        $filearea = 'activityicon';
+        $fileitemid = 0;
         $modname = get_string('uploadiconbulk', 'local_courseicons', count($cmidslist));
     } else {
         $cm = get_coursemodule_from_id('', $cmid, $course->id, false, MUST_EXIST);
         $modcontext = context_module::instance($cmid);
+        $filearea = 'activityicon';
+        $fileitemid = 0;
         $modname = $cm->name;
     }
 
@@ -110,8 +144,8 @@ if ($cmid > 0 || !empty($bulkcmids)) {
         $draftitemid,
         $modcontext->id,
         'local_courseicons',
-        'activityicon',
-        0,
+        $filearea,
+        $fileitemid,
         $fileopts
     );
 
@@ -119,6 +153,7 @@ if ($cmid > 0 || !empty($bulkcmids)) {
         'id' => $course->id,
         'cmid' => $cmid,
         'bulkcmids' => $bulkcmids ?? '',
+        'defmodname' => $defmodname ?? '',
         'iconfile_filemanager' => $draftitemid,
     ];
 
@@ -126,6 +161,7 @@ if ($cmid > 0 || !empty($bulkcmids)) {
         'courseid' => $course->id,
         'cmid' => $cmid,
         'bulkcmids' => $bulkcmids ?? '',
+        'defmodname' => $defmodname ?? '',
         'modname' => $modname,
     ]);
 
@@ -163,14 +199,25 @@ if ($cmid > 0 || !empty($bulkcmids)) {
                 $data->iconfile_filemanager,
                 $modcontext->id,
                 'local_courseicons',
-                'activityicon',
-                0,
+                $filearea,
+                $fileitemid,
                 $fileopts
             );
 
             $fs = get_file_storage();
 
-            if (!empty($bulkcmids)) {
+            // Optimize the newly uploaded image immediately.
+            \local_courseicons\image_optimizer::optimize_area_files(
+                $modcontext->id,
+                'local_courseicons',
+                $filearea,
+                $fileitemid
+            );
+
+            if (!empty($defmodname)) {
+                $defrecord->timemodified = time();
+                $DB->update_record('local_courseicons_def', $defrecord);
+            } else if (!empty($bulkcmids)) {
                 $cmidslist = explode(',', $bulkcmids);
                 $files = $fs->get_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0, 'id', false);
                 $sourcefile = !empty($files) ? reset($files) : null;
@@ -234,7 +281,7 @@ if ($cmid > 0 || !empty($bulkcmids)) {
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('manageicons', 'local_courseicons'));
 
-if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
+if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo $OUTPUT->box_start('generalbox');
     $mform->display();
     echo $OUTPUT->box_end();
@@ -243,6 +290,7 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
 
     // Get full records to have the modification date (timemodified).
     $customicons = $DB->get_records('local_courseicons', ['courseid' => $course->id], '', 'cmid, id, timemodified');
+    $defaulticons = $DB->get_records('local_courseicons_def', ['courseid' => $course->id], '', 'modname, id, timemodified');
 
     // PHPCS: Extract strings outside loops to optimize memory.
     $strcustomized = get_string('customized', 'local_courseicons');
@@ -258,6 +306,132 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
         $modnames[$module->modname] = get_string('pluginname', 'mod_' . $module->modname);
     }
     asort($modnames);
+
+    // Output the Tabs Navigation.
+    echo html_writer::start_tag('ul', ['class' => 'nav nav-tabs mb-4', 'id' => 'iconTabs', 'role' => 'tablist']);
+    echo html_writer::start_tag('li', ['class' => 'nav-item', 'role' => 'presentation']);
+    echo html_writer::tag('button', get_string('defaulticons', 'local_courseicons'), [
+        'class' => 'nav-link active',
+        'id' => 'default-tab',
+        'data-toggle' => 'tab',
+        'data-bs-toggle' => 'tab',
+        'data-target' => '#default-icons',
+        'data-bs-target' => '#default-icons',
+        'type' => 'button',
+        'role' => 'tab',
+        'aria-controls' => 'default-icons',
+        'aria-selected' => 'true'
+    ]);
+    echo html_writer::end_tag('li');
+    echo html_writer::start_tag('li', ['class' => 'nav-item', 'role' => 'presentation']);
+    echo html_writer::tag('button', get_string('individualicons', 'local_courseicons'), [
+        'class' => 'nav-link',
+        'id' => 'individual-tab',
+        'data-toggle' => 'tab',
+        'data-bs-toggle' => 'tab',
+        'data-target' => '#individual-icons',
+        'data-bs-target' => '#individual-icons',
+        'type' => 'button',
+        'role' => 'tab',
+        'aria-controls' => 'individual-icons',
+        'aria-selected' => 'false'
+    ]);
+    echo html_writer::end_tag('li');
+    echo html_writer::end_tag('ul');
+
+    echo html_writer::start_div('tab-content', ['id' => 'iconTabsContent']);
+
+    // Tab 1: Default Icons
+    echo html_writer::start_div('tab-pane fade show active', [
+        'id' => 'default-icons',
+        'role' => 'tabpanel',
+        'aria-labelledby' => 'default-tab'
+    ]);
+
+    echo $OUTPUT->heading(get_string('defaulticons', 'local_courseicons'), 3);
+    echo html_writer::tag('p', get_string('defaulticonscoursedesc', 'local_courseicons'), ['class' => 'text-muted']);
+
+    $deftable = new html_table();
+    $deftable->head = [
+        get_string('activitytypes', 'local_courseicons'),
+        get_string('preview', 'local_courseicons'),
+        get_string('action'),
+    ];
+    $deftable->attributes['class'] = 'generaltable table table-striped align-middle mb-5';
+
+    foreach ($modnames as $mname => $pluginname) {
+        $previewhtml = '';
+        $actionhtml = '';
+
+        if (isset($defaulticons[$mname])) {
+            $defrecord = $defaulticons[$mname];
+            $fs = get_file_storage();
+            $files = $fs->get_area_files($context->id, 'local_courseicons', 'defaulticon', $defrecord->id, 'id', false);
+
+            if (!empty($files)) {
+                $file = reset($files);
+                $murl = moodle_url::make_pluginfile_url(
+                    $context->id,
+                    'local_courseicons',
+                    'defaulticon',
+                    $defrecord->id,
+                    '/',
+                    $file->get_filename()
+                );
+                $murl->param('t', $defrecord->timemodified);
+                $previewhtml = html_writer::empty_tag('img', [
+                    'src' => $murl->out(false),
+                    'alt' => get_string('defaulticons', 'local_courseicons'),
+                    'style' => 'width: 36px; height: 36px; object-fit: contain;',
+                ]);
+
+                $delurl = new moodle_url('/local/courseicons/manage.php', [
+                    'id' => $course->id,
+                    'action' => 'deletedefault',
+                    'defmodname' => $mname,
+                    'sesskey' => sesskey(),
+                ]);
+
+                $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
+                $delaction = html_writer::link($delurl, $delicon, [
+                    'class' => 'courseicons-delete-single ms-2 text-danger',
+                    'data-confirm' => get_string('deleteiconconfirm', 'local_courseicons'),
+                ]);
+                $previewhtml .= $delaction;
+            }
+        } else {
+            $previewhtml = $OUTPUT->pix_icon(
+                'monologo',
+                '',
+                $mname,
+                ['style' => 'width: 32px; height: 32px; opacity: 0.4;']
+            );
+        }
+
+        $editurl = new moodle_url('/local/courseicons/manage.php', [
+            'id' => $course->id,
+            'defmodname' => $mname,
+        ]);
+        $actionhtml = html_writer::link($editurl, get_string('setdefaulticon', 'local_courseicons'), ['class' => 'btn btn-sm btn-outline-primary']);
+
+        $modicon = $OUTPUT->pix_icon('monologo', '', $mname, ['class' => 'icon']);
+        $modnamecell = $modicon . ' ' . format_string($pluginname);
+
+        $row = new html_table_row([$modnamecell, $previewhtml, $actionhtml]);
+        $deftable->data[] = $row;
+    }
+
+    echo html_writer::table($deftable);
+    echo html_writer::end_div(); // End Tab 1
+
+    // Tab 2: Individual Icons
+    echo html_writer::start_div('tab-pane fade', [
+        'id' => 'individual-icons',
+        'role' => 'tabpanel',
+        'aria-labelledby' => 'individual-tab'
+    ]);
+
+    echo $OUTPUT->heading(get_string('individualicons', 'local_courseicons'), 3);
 
     echo html_writer::start_div('row mb-3');
     echo html_writer::start_div('col-md-6 col-sm-12 mb-2');
@@ -403,6 +577,8 @@ if (($cmid > 0 || !empty($bulkcmids)) && isset($mform)) {
     echo html_writer::end_div();
 
     echo html_writer::end_tag('form');
+    echo html_writer::end_div(); // End Tab 2
+    echo html_writer::end_div(); // End Tab Content
 
     $PAGE->requires->js_call_amd('local_courseicons/manage', 'init');
 }

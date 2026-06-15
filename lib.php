@@ -48,7 +48,8 @@ function local_courseicons_standard_head_html(): string {
     }
 
     $records = $DB->get_records('local_courseicons', ['courseid' => $COURSE->id]);
-    if (empty($records)) {
+    $defaults = $DB->get_records('local_courseicons_def', ['courseid' => $COURSE->id]);
+    if (empty($records) && empty($defaults)) {
         $cache->set($COURSE->id, 'empty');
         return '';
     }
@@ -63,6 +64,64 @@ function local_courseicons_standard_head_html(): string {
     $selectorstileicon = [];
     $selectorstilecontainer = [];
     $dynamiccontent = '';
+
+    // --- Process Defaults First (so individual overrides them if they have same specificity) ---
+    foreach ($defaults as $defrecord) {
+        $coursecontext = context_course::instance($COURSE->id);
+        $files = $fs->get_area_files($coursecontext->id, 'local_courseicons', 'defaulticon', $defrecord->id, 'id', false);
+        if (!empty($files)) {
+            $file = reset($files);
+            if ($file->get_filesize() <= 102400) {
+                $mimetype = $file->get_mimetype();
+                $base64 = base64_encode($file->get_content());
+                $url = "data:{$mimetype};base64,{$base64}";
+            } else {
+                $murl = moodle_url::make_pluginfile_url(
+                    $coursecontext->id,
+                    'local_courseicons',
+                    'defaulticon',
+                    $defrecord->id,
+                    '/',
+                    $file->get_filename()
+                );
+                $murl->param('t', $defrecord->timemodified);
+                $url = $murl->out(false);
+            }
+
+            $modname = $defrecord->modname;
+
+            // Group selectors for static rules.
+            $selectorsbg[] = ".path-course-view .activity-item.modtype_{$modname} .activityiconcontainer, " .
+                ".path-mod-{$modname} .activity-item.modtype_{$modname} .activityiconcontainer";
+            $selectorsbg[] = ".path-course-view li.activity.{$modname} .activityiconcontainer";
+            $selectorsbg[] = ".path-course-view li.subtile.{$modname} .tile-icon";
+            $selectorsbg[] = ".path-mod-{$modname} .page-header-image .activityiconcontainer";
+            $selectorsbg[] = ".path-mod-{$modname} .page-header-headings .activityiconcontainer";
+
+            $selicon = [
+                ".path-course-view .activity-item.modtype_{$modname} .activityiconcontainer img, " .
+                ".path-mod-{$modname} .activity-item.modtype_{$modname} .activityiconcontainer img",
+                ".path-course-view li.activity.{$modname} .activityiconcontainer img",
+                ".path-course-view li.activity.{$modname} .activityinstance > a > img.activityicon",
+                ".path-course-view li.activity.{$modname} .activityinstance > a > img.icon",
+            ];
+            $selectorsicon = array_merge($selectorsicon, $selicon);
+
+            $selheader = [
+                ".path-mod-{$modname} .page-header-image img",
+                ".path-mod-{$modname} .page-header-headings img.activityicon",
+            ];
+            $selectorsheadericon = array_merge($selectorsheadericon, $selheader);
+
+            $seltile = [".path-course-view li.subtile.{$modname} .tile-icon img"];
+            $selectorstileicon = array_merge($selectorstileicon, $seltile);
+
+            $selectorstilecontainer[] = ".path-course-view li.subtile.{$modname} .tile-icon";
+
+            $dynamiccontent .= implode(', ', $selicon) . ", " . implode(', ', $selheader) .
+                ", " . implode(', ', $seltile) . " { content: url('{$url}') !important; }\n";
+        }
+    }
 
     foreach ($records as $record) {
         $modcontext = context_module::instance($record->cmid, IGNORE_MISSING);
@@ -98,6 +157,7 @@ function local_courseicons_standard_head_html(): string {
             $selectorsbg[] = ".path-course-view .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer, " .
                 ".path-mod .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer";
             $selectorsbg[] = ".path-course-view #module-{$cmid} .activityiconcontainer";
+            $selectorsbg[] = ".path-course-view li.subtile#module-{$cmid} .tile-icon";
             $selectorsbg[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
             $selectorsbg[] = ".path-mod.cmid-{$cmid} .page-header-image .activityiconcontainer";
             $selectorsbg[] = ".path-mod.cmid-{$cmid} .page-header-headings .activityiconcontainer";
@@ -117,9 +177,13 @@ function local_courseicons_standard_head_html(): string {
             ];
             $selectorsheadericon = array_merge($selectorsheadericon, $selheader);
 
-            $seltile = [".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon img"];
+            $seltile = [
+                ".path-course-view li.subtile#module-{$cmid} .tile-icon img",
+                ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon img"
+            ];
             $selectorstileicon = array_merge($selectorstileicon, $seltile);
 
+            $selectorstilecontainer[] = ".path-course-view li.subtile#module-{$cmid} .tile-icon";
             $selectorstilecontainer[] = ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon";
 
             // Dynamic rule (unique URL per cmid).
@@ -207,9 +271,11 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
     $jsloaded = true;
 
     $records = $DB->get_records('local_courseicons', ['courseid' => $COURSE->id]);
+    $defaults = $DB->get_records('local_courseicons_def', ['courseid' => $COURSE->id]);
 
-    if (!empty($records)) {
+    if (!empty($records) || !empty($defaults)) {
         $icondata = [];
+        $defaultdata = [];
         $fs = get_file_storage();
 
         foreach ($records as $record) {
@@ -230,7 +296,6 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
                     '/',
                     $file->get_filename()
                 );
-
                 $murl->param('t', $record->timemodified);
 
                 $icondata[] = [
@@ -240,9 +305,31 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
             }
         }
 
-        if (!empty($icondata)) {
+        $coursecontext = context_course::instance($COURSE->id);
+        foreach ($defaults as $defrecord) {
+            $files = $fs->get_area_files($coursecontext->id, 'local_courseicons', 'defaulticon', $defrecord->id, 'id', false);
+            if (!empty($files)) {
+                $file = reset($files);
+                $murl = moodle_url::make_pluginfile_url(
+                    $coursecontext->id,
+                    'local_courseicons',
+                    'defaulticon',
+                    $defrecord->id,
+                    '/',
+                    $file->get_filename()
+                );
+                $murl->param('t', $defrecord->timemodified);
+
+                $defaultdata[] = [
+                    'modname' => $defrecord->modname,
+                    'url' => $murl->out(false),
+                ];
+            }
+        }
+
+        if (!empty($icondata) || !empty($defaultdata)) {
             // Send data to JS for deep DOM manipulation.
-            $PAGE->requires->js_call_amd('local_courseicons/swapper', 'init', [$icondata]);
+            $PAGE->requires->js_call_amd('local_courseicons/swapper', 'init', [$icondata, $defaultdata]);
         }
     }
 }
@@ -294,15 +381,19 @@ function local_courseicons_pluginfile(
     $forcedownload,
     array $options = []
 ) {
-    if ($context->contextlevel != CONTEXT_MODULE) {
+    if ($context->contextlevel != CONTEXT_MODULE && $context->contextlevel != CONTEXT_COURSE) {
         return false;
     }
 
-    if ($filearea !== 'activityicon') {
+    if ($filearea !== 'activityicon' && $filearea !== 'defaulticon') {
         return false;
     }
 
-    require_course_login($course, true, $cm);
+    if ($context->contextlevel == CONTEXT_MODULE) {
+        require_course_login($course, true, $cm);
+    } else {
+        require_course_login($course);
+    }
 
     $itemid = (int)array_shift($args);
     $filename = array_pop($args);
