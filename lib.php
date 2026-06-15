@@ -65,7 +65,7 @@ function local_courseicons_standard_head_html(): string {
     $selectorstilecontainer = [];
     $dynamiccontent = '';
 
-    // --- Process Defaults First (so individual overrides them if they have same specificity) ---
+    // Process defaults first (so individual overrides them if they have same specificity).
     foreach ($defaults as $defrecord) {
         $coursecontext = context_course::instance($COURSE->id);
         $files = $fs->get_area_files($coursecontext->id, 'local_courseicons', 'defaulticon', $defrecord->id, 'id', false);
@@ -179,7 +179,7 @@ function local_courseicons_standard_head_html(): string {
 
             $seltile = [
                 ".path-course-view li.subtile#module-{$cmid} .tile-icon img",
-                ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon img"
+                ".path-course-view li.subtile[data-id=\"{$cmid}\"] .tile-icon img",
             ];
             $selectorstileicon = array_merge($selectorstileicon, $seltile);
 

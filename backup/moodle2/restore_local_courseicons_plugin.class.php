@@ -30,7 +30,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_local_courseicons_plugin extends restore_local_plugin {
-
     /**
      * Define module plugin structure.
      *

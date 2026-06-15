@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Upgrade the plugin.
@@ -36,7 +35,6 @@ function xmldb_local_courseicons_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2026061416) {
-
         // Define table local_courseicons_def to be created.
         $table = new xmldb_table('local_courseicons_def');
 

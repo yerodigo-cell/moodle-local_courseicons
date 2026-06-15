@@ -320,7 +320,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         'type' => 'button',
         'role' => 'tab',
         'aria-controls' => 'default-icons',
-        'aria-selected' => 'true'
+        'aria-selected' => 'true',
     ]);
     echo html_writer::end_tag('li');
     echo html_writer::start_tag('li', ['class' => 'nav-item', 'role' => 'presentation']);
@@ -334,18 +334,18 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         'type' => 'button',
         'role' => 'tab',
         'aria-controls' => 'individual-icons',
-        'aria-selected' => 'false'
+        'aria-selected' => 'false',
     ]);
     echo html_writer::end_tag('li');
     echo html_writer::end_tag('ul');
 
     echo html_writer::start_div('tab-content', ['id' => 'iconTabsContent']);
 
-    // Tab 1: Default Icons
+    // Tab 1: Default Icons.
     echo html_writer::start_div('tab-pane fade show active', [
         'id' => 'default-icons',
         'role' => 'tabpanel',
-        'aria-labelledby' => 'default-tab'
+        'aria-labelledby' => 'default-tab',
     ]);
 
     echo $OUTPUT->heading(get_string('defaulticons', 'local_courseicons'), 3);
@@ -424,11 +424,11 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo html_writer::table($deftable);
     echo html_writer::end_div(); // End Tab 1
 
-    // Tab 2: Individual Icons
+    // Tab 2: Individual Icons.
     echo html_writer::start_div('tab-pane fade', [
         'id' => 'individual-icons',
         'role' => 'tabpanel',
-        'aria-labelledby' => 'individual-tab'
+        'aria-labelledby' => 'individual-tab',
     ]);
 
     echo $OUTPUT->heading(get_string('individualicons', 'local_courseicons'), 3);
@@ -454,7 +454,11 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
 
     $table = new html_table();
     $table->head = [
-        '<input type="checkbox" id="courseicons-select-all" title="' . get_string('selectall') . '">',
+        html_writer::empty_tag('input', [
+            'type' => 'checkbox',
+            'id' => 'courseicons-select-all',
+            'title' => get_string('selectall')
+        ]),
         get_string('modulename', 'local_courseicons'),
         get_string('preview', 'local_courseicons'),
         get_string('currenticon', 'local_courseicons'),
@@ -577,8 +581,8 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo html_writer::end_div();
 
     echo html_writer::end_tag('form');
-    echo html_writer::end_div(); // End Tab 2
-    echo html_writer::end_div(); // End Tab Content
+    echo html_writer::end_div(); // End Tab 2.
+    echo html_writer::end_div(); // End Tab Content.
 
     $PAGE->requires->js_call_amd('local_courseicons/manage', 'init');
 }
