@@ -24,8 +24,6 @@
 
 namespace local_courseicons;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class image_optimizer
  *
@@ -98,11 +96,11 @@ class image_optimizer {
                 // Buffer the output.
                 ob_start();
                 if ($mimetype === 'image/jpeg') {
-                    imagejpeg($newimg, null, 80); // 80% quality
+                    imagejpeg($newimg, null, 80); // 80% quality.
                 } else if ($mimetype === 'image/png') {
-                    imagepng($newimg, null, 8); // Compression level 8 (0-9)
+                    imagepng($newimg, null, 8); // Compression level 8 (0-9).
                 } else if ($mimetype === 'image/webp') {
-                    imagewebp($newimg, null, 80); // 80% quality
+                    imagewebp($newimg, null, 80); // 80% quality.
                 }
                 $optimizedcontent = ob_get_clean();
 

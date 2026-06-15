@@ -55,14 +55,14 @@ class hook_listener {
             global $DB;
 
             $newcourseid = $event->objectid;
-            
-            // Find the old course ID from the event data
+
+            // Find the old course ID from the event data.
             $oldcourseid = $event->other['originalcourseid'] ?? null;
             if (!$oldcourseid || $oldcourseid == $newcourseid) {
                 return;
             }
 
-            // Get all icons from the old course
+            // Get all icons from the old course.
             $oldrecords = $DB->get_records('local_courseicons', ['courseid' => $oldcourseid]);
             if (empty($oldrecords)) {
                 return;
@@ -75,7 +75,7 @@ class hook_listener {
             foreach ($oldrecords as $oldrecord) {
                 $oldcmid = $oldrecord->cmid;
 
-                // Find the old cm's name and modname
+                // Find the old cm's name and modname.
                 if (!isset($oldmodinfo->cms[$oldcmid])) {
                     continue;
                 }
@@ -83,7 +83,7 @@ class hook_listener {
                 $oldname = $oldcm->name;
                 $oldmodname = $oldcm->modname;
 
-                // Search for the corresponding cm in the new course
+                // Search for the corresponding cm in the new course.
                 $newcmid = null;
                 foreach ($newmodinfo->get_cms() as $newcm) {
                     if ($newcm->name === $oldname && $newcm->modname === $oldmodname) {
@@ -96,7 +96,7 @@ class hook_listener {
                     continue;
                 }
 
-                // Create new record
+                // Create new record.
                 if (!$DB->record_exists('local_courseicons', ['cmid' => $newcmid])) {
                     $newrecord = new \stdClass();
                     $newrecord->courseid = $newcourseid;
@@ -106,7 +106,7 @@ class hook_listener {
                     $DB->insert_record('local_courseicons', $newrecord);
                 }
 
-                // Copy the file
+                // Copy the file.
                 $oldmodcontext = \context_module::instance($oldcmid, IGNORE_MISSING);
                 $newmodcontext = \context_module::instance($newcmid, IGNORE_MISSING);
 
@@ -116,7 +116,9 @@ class hook_listener {
                         if ($oldfile->is_directory()) {
                             continue;
                         }
-                        if ($fs->file_exists($newmodcontext->id, 'local_courseicons', 'activityicon', 0, $oldfile->get_filepath(), $oldfile->get_filename())) {
+                        $filepath = $oldfile->get_filepath();
+                        $filename = $oldfile->get_filename();
+                        if ($fs->file_exists($newmodcontext->id, 'local_courseicons', 'activityicon', 0, $filepath, $filename)) {
                             continue;
                         }
                         $newfilerecord = [
@@ -132,7 +134,7 @@ class hook_listener {
                 }
             }
 
-            // Copy default icons
+            // Copy default icons.
             $olddefaults = $DB->get_records('local_courseicons_def', ['courseid' => $oldcourseid]);
             if (!empty($olddefaults)) {
                 $oldcoursecontext = \context_course::instance($oldcourseid, IGNORE_MISSING);
@@ -148,7 +150,14 @@ class hook_listener {
                         $newdef->id = $DB->insert_record('local_courseicons_def', $newdef);
 
                         if ($oldcoursecontext && $newcoursecontext) {
-                            $oldfiles = $fs->get_area_files($oldcoursecontext->id, 'local_courseicons', 'defaulticon', $olddef->id, 'id', false);
+                            $oldfiles = $fs->get_area_files(
+                                $oldcoursecontext->id,
+                                'local_courseicons',
+                                'defaulticon',
+                                $olddef->id,
+                                'id',
+                                false
+                            );
                             foreach ($oldfiles as $oldfile) {
                                 if ($oldfile->is_directory()) {
                                     continue;
@@ -169,8 +178,7 @@ class hook_listener {
             }
         } catch (\Throwable $e) {
             // We MUST catch everything to guarantee the async task never hangs at 100%.
-            error_log("LOCAL_COURSEICONS OBSERVER ERROR: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            debugging("LOCAL_COURSEICONS OBSERVER ERROR: " . $e->getMessage(), DEBUG_DEVELOPER);
         }
     }
-
 }
