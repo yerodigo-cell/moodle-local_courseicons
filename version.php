@@ -25,8 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_courseicons';
-$plugin->version   = 2026061400; // The current plugin version (YYYYMMDDXX).
-$plugin->requires  = 2022041900; // Requires this Moodle version (4.0).
-$plugin->component = 'local_courseicons'; // Full name of the plugin (used for diagnostics).
+$plugin->version   = 2026061400;
+$plugin->requires  = 2022041900;
 $plugin->release   = 'v2.0';
 $plugin->maturity  = MATURITY_STABLE;
