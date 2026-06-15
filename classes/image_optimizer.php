@@ -41,10 +41,10 @@ class image_optimizer {
      * @param int $contextid
      * @param string $component
      * @param string $filearea
-     * @param int $itemid
+     * @param int|string $itemid
      * @return void
      */
-    public static function optimize_area_files(int $contextid, string $component, string $filearea, int $itemid): void {
+    public static function optimize_area_files(int $contextid, string $component, string $filearea, $itemid): void {
         $fs = get_file_storage();
         $files = $fs->get_area_files($contextid, $component, $filearea, $itemid, 'id', false);
 
