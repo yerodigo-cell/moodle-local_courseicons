@@ -155,7 +155,8 @@ class icon_upload_form extends moodleform {
             $iconurl = $OUTPUT->image_url('library/' . $iconname, 'local_courseicons');
             $selectedclass = ($selectedicon === $iconfile) ? ' selected' : '';
 
-            $libpanehtml .= '<div class="courseicons-grid-item' . $selectedclass . '" data-icon="' . s($iconfile) . '" data-name="' . s($displayname) . '">';
+            $libpanehtml .= '<div class="courseicons-grid-item' . $selectedclass . '" ' .
+                'data-icon="' . s($iconfile) . '" data-name="' . s($displayname) . '">';
             $libpanehtml .= '<img src="' . $iconurl . '" alt="' . s($displayname) . '">';
             $libpanehtml .= '<span class="courseicons-grid-item-name">' . s($displayname) . '</span>';
             $libpanehtml .= '</div>';
@@ -181,7 +182,6 @@ class icon_upload_form extends moodleform {
             $filemanageropts
         );
 
-
         if (!empty($defmodname)) {
             $mform->addElement('checkbox', 'deleteicon', get_string('deletedefault', 'local_courseicons'));
         } else {
@@ -192,7 +192,7 @@ class icon_upload_form extends moodleform {
 
         // Require AMD JavaScript.
         $PAGE->requires->js_call_amd('local_courseicons/form', 'init', [[
-            'noIconsFoundStr' => get_string('noiconsfound', 'local_courseicons')
+            'noIconsFoundStr' => get_string('noiconsfound', 'local_courseicons'),
         ]]);
     }
 }

@@ -91,8 +91,14 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .courseicons-library-search-wrapper {
@@ -143,7 +149,7 @@
     align-items: center;
     justify-content: center;
     padding: 1rem 0.5rem;
-    background-color: #ffffff;
+    background-color: #fff;
     border: 2px solid #dee2e6;
     border-radius: 0.5rem;
     cursor: pointer;
@@ -197,59 +203,51 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Full width form items override for courseicons custom form layout */
-#fitem_id_form_heading,
-#fitem_id_tab_switcher,
-#fitem_id_tab_pane_library {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    border: none !important;
+body.path-local-courseicons .mform #fitem_id_form_heading,
+body.path-local-courseicons .mform #fitem_id_tab_switcher,
+body.path-local-courseicons .mform #fitem_id_tab_pane_library {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    border: none;
 }
 
-#fitem_id_form_heading > div,
-#fitem_id_tab_switcher > div,
-#fitem_id_tab_pane_library > div,
-#fitem_id_form_heading > .col-md-9,
-#fitem_id_tab_switcher > .col-md-9,
-#fitem_id_tab_pane_library > .col-md-9 {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: 0 0 100% !important;
-    display: block !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+body.path-local-courseicons .mform #fitem_id_form_heading > div,
+body.path-local-courseicons .mform #fitem_id_tab_switcher > div,
+body.path-local-courseicons .mform #fitem_id_tab_pane_library > div,
+body.path-local-courseicons .mform #fitem_id_form_heading > .col-md-9,
+body.path-local-courseicons .mform #fitem_id_tab_switcher > .col-md-9,
+body.path-local-courseicons .mform #fitem_id_tab_pane_library > .col-md-9 {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+    display: block;
+    padding-left: 0;
+    padding-right: 0;
 }
 
-#fitem_id_form_heading > .col-md-3,
-#fitem_id_tab_switcher > .col-md-3,
-#fitem_id_tab_pane_library > .col-md-3,
-#fitem_id_form_heading > label,
-#fitem_id_tab_switcher > label,
-#fitem_id_tab_pane_library > label {
-    display: none !important;
+body.path-local-courseicons .mform #fitem_id_form_heading > .col-md-3,
+body.path-local-courseicons .mform #fitem_id_tab_switcher > .col-md-3,
+body.path-local-courseicons .mform #fitem_id_tab_pane_library > .col-md-3,
+body.path-local-courseicons .mform #fitem_id_form_heading > label,
+body.path-local-courseicons .mform #fitem_id_tab_switcher > label,
+body.path-local-courseicons .mform #fitem_id_tab_pane_library > label {
+    display: none;
 }
 
 /* Hide Moodle's form header collapse button/arrow on custom icon management pages */
-.page-local-courseicons-manage legend a,
-.path-local-courseicons legend a,
-.page-local-courseicons-manage legend i,
-.path-local-courseicons legend i {
-    display: none !important;
-    pointer-events: none !important;
+body.path-local-courseicons legend a,
+body.path-local-courseicons legend i {
+    display: none;
+    pointer-events: none;
 }
 
-.page-local-courseicons-manage fieldset.collapsible legend,
-.path-local-courseicons fieldset.collapsible legend {
-    cursor: default !important;
+body.path-local-courseicons fieldset.collapsible legend {
+    cursor: default;
 }
-
-
-
-
-

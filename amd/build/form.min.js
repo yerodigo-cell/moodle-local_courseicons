@@ -23,7 +23,7 @@
 
 define(['jquery'], function($) {
     return {
-        init: function(config) {
+        init: function() {
             var activeTabInput = $('input[name="active_tab"]');
             var libraryIconInput = $('input[name="library_icon"]');
             var deleteIconCheckbox = $('input[name="deleteicon"]');
