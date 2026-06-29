@@ -59,3 +59,8 @@ $string['successupdated'] = 'El icono de la actividad ha sido actualizado correc
 $string['uploaddefaulticon'] = 'Subir icono por defecto para: {$a}';
 $string['uploadicon'] = 'Icono SVG/Imagen/GIF para: {$a}';
 $string['uploadiconbulk'] = 'Subir icono SVG/Imagen/GIF para {$a} actividades seleccionadas';
+$string['selectfromlibrary'] = 'Elegir de la biblioteca';
+$string['uploadcustom'] = 'Subir archivo personalizado';
+$string['searchlibrary'] = 'Buscar en la biblioteca...';
+$string['noiconsfound'] = 'No se encontraron iconos que coincidan.';
+

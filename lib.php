@@ -201,8 +201,8 @@ function local_courseicons_standard_head_html(): string {
             "    border: none !important;\n}\n\n";
         $css .= implode(",\n", $selectorsicon) . " {\n" .
             "    object-fit: contain !important;\n" .
-            "    width: 32px !important;\n" .
-            "    height: 32px !important;\n" .
+            "    width: 50px !important;\n" .
+            "    height: 50px !important;\n" .
             "    filter: none !important;\n" .
             "    border-radius: 0 !important;\n}\n\n";
         $css .= implode(",\n", $selectorsheadericon) . " {\n" .
@@ -411,5 +411,5 @@ function local_courseicons_pluginfile(
         return false;
     }
 
-    send_stored_file($file, 0, 0, $forcedownload, $options);
+    send_stored_file($file, 604800, 0, $forcedownload, $options);
 }

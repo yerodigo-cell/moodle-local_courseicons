@@ -33,6 +33,7 @@ $courseid = required_param('id', PARAM_INT);
 $cmid = optional_param('cmid', 0, PARAM_INT);
 $defmodname = optional_param('defmodname', '', PARAM_ALPHANUMEXT);
 $action = optional_param('action', '', PARAM_ALPHANUMEXT);
+$tab = optional_param('tab', 'default', PARAM_ALPHA);
 
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 
@@ -57,8 +58,9 @@ if ($action === 'delete') {
 
     cache::make('local_courseicons', 'course_css')->delete($course->id);
 
+    $redirecturl = new moodle_url($url, ['tab' => 'individual']);
     redirect(
-        $url,
+        $redirecturl,
         get_string('successdeleted', 'local_courseicons'),
         null,
         \core\output\notification::NOTIFY_SUCCESS
@@ -72,8 +74,9 @@ if ($action === 'delete') {
     }
     cache::make('local_courseicons', 'course_css')->delete($course->id);
 
+    $redirecturl = new moodle_url($url, ['tab' => 'default']);
     redirect(
-        $url,
+        $redirecturl,
         get_string('successdeleted', 'local_courseicons'),
         null,
         \core\output\notification::NOTIFY_SUCCESS
@@ -92,8 +95,9 @@ if ($action === 'delete') {
 
             cache::make('local_courseicons', 'course_css')->delete($course->id);
 
+            $redirecturl = new moodle_url($url, ['tab' => 'individual']);
             redirect(
-                $url,
+                $redirecturl,
                 get_string('successdeleted', 'local_courseicons'),
                 null,
                 \core\output\notification::NOTIFY_SUCCESS
@@ -168,7 +172,13 @@ if ($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) {
     $mform->set_data($formdata);
 
     if ($mform->is_cancelled()) {
-        redirect($url);
+        $redirecturl = new moodle_url($url);
+        if (!empty($defmodname)) {
+            $redirecturl->param('tab', 'default');
+        } else {
+            $redirecturl->param('tab', 'individual');
+        }
+        redirect($redirecturl);
     } else if ($data = $mform->get_data()) {
         if (!empty($data->deleteicon)) {
             if (!empty($bulkcmids)) {
@@ -187,22 +197,57 @@ if ($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) {
 
             cache::make('local_courseicons', 'course_css')->delete($course->id);
 
+            $redirecturl = new moodle_url($url);
+            if (!empty($defmodname)) {
+                $redirecturl->param('tab', 'default');
+            } else {
+                $redirecturl->param('tab', 'individual');
+            }
             redirect(
-                $url,
+                $redirecturl,
                 get_string('successdeleted', 'local_courseicons'),
                 null,
                 \core\output\notification::NOTIFY_SUCCESS
             );
         } else {
-            $fileopts = ['subdirs' => 0, 'maxfiles' => 1];
-            file_save_draft_area_files(
-                $data->iconfile_filemanager,
-                $modcontext->id,
-                'local_courseicons',
-                $filearea,
-                $fileitemid,
-                $fileopts
-            );
+            $activetab = $data->active_tab ?? 'upload';
+            $libraryicon = $data->library_icon ?? '';
+            $saved = false;
+
+            if ($activetab === 'library' && !empty($libraryicon)) {
+                $libraryicon = clean_param($libraryicon, PARAM_FILE);
+                $filepath = $CFG->dirroot . '/local/courseicons/pix/library/' . $libraryicon;
+                $realbase = realpath($CFG->dirroot . '/local/courseicons/pix/library');
+                $realfile = realpath($filepath);
+
+                if ($realfile !== false && strpos($realfile, $realbase) === 0 && file_exists($realfile)) {
+                    $fs = get_file_storage();
+                    $fs->delete_area_files($modcontext->id, 'local_courseicons', $filearea, $fileitemid);
+
+                    $filerecord = [
+                        'contextid' => $modcontext->id,
+                        'component' => 'local_courseicons',
+                        'filearea'  => $filearea,
+                        'itemid'    => $fileitemid,
+                        'filepath'  => '/',
+                        'filename'  => $libraryicon,
+                    ];
+                    $fs->create_file_from_pathname($filerecord, $realfile);
+                    $saved = true;
+                }
+            }
+
+            if (!$saved) {
+                $fileopts = ['subdirs' => 0, 'maxfiles' => 1];
+                file_save_draft_area_files(
+                    $data->iconfile_filemanager,
+                    $modcontext->id,
+                    'local_courseicons',
+                    $filearea,
+                    $fileitemid,
+                    $fileopts
+                );
+            }
 
             $fs = get_file_storage();
 
@@ -268,8 +313,14 @@ if ($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) {
 
             cache::make('local_courseicons', 'course_css')->delete($course->id);
 
+            $redirecturl = new moodle_url($url);
+            if (!empty($defmodname)) {
+                $redirecturl->param('tab', 'default');
+            } else {
+                $redirecturl->param('tab', 'individual');
+            }
             redirect(
-                $url,
+                $redirecturl,
                 get_string('successupdated', 'local_courseicons'),
                 null,
                 \core\output\notification::NOTIFY_SUCCESS
@@ -308,10 +359,16 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     asort($modnames);
 
     // Output the Tabs Navigation.
+    $defaultactive = ($tab === 'default') ? 'active' : '';
+    $defaultselected = ($tab === 'default') ? 'true' : 'false';
+    $individualactive = ($tab === 'individual') ? 'active' : '';
+    $individualselected = ($tab === 'individual') ? 'true' : 'false';
+
+    // Output the Tabs Navigation.
     echo html_writer::start_tag('ul', ['class' => 'nav nav-tabs mb-4', 'id' => 'iconTabs', 'role' => 'tablist']);
     echo html_writer::start_tag('li', ['class' => 'nav-item', 'role' => 'presentation']);
     echo html_writer::tag('button', get_string('defaulticons', 'local_courseicons'), [
-        'class' => 'nav-link active',
+        'class' => 'nav-link ' . $defaultactive,
         'id' => 'default-tab',
         'data-toggle' => 'tab',
         'data-bs-toggle' => 'tab',
@@ -320,12 +377,12 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         'type' => 'button',
         'role' => 'tab',
         'aria-controls' => 'default-icons',
-        'aria-selected' => 'true',
+        'aria-selected' => $defaultselected,
     ]);
     echo html_writer::end_tag('li');
     echo html_writer::start_tag('li', ['class' => 'nav-item', 'role' => 'presentation']);
     echo html_writer::tag('button', get_string('individualicons', 'local_courseicons'), [
-        'class' => 'nav-link',
+        'class' => 'nav-link ' . $individualactive,
         'id' => 'individual-tab',
         'data-toggle' => 'tab',
         'data-bs-toggle' => 'tab',
@@ -334,7 +391,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         'type' => 'button',
         'role' => 'tab',
         'aria-controls' => 'individual-icons',
-        'aria-selected' => 'false',
+        'aria-selected' => $individualselected,
     ]);
     echo html_writer::end_tag('li');
     echo html_writer::end_tag('ul');
@@ -342,7 +399,8 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo html_writer::start_div('tab-content', ['id' => 'iconTabsContent']);
 
     // Tab 1: Default Icons.
-    echo html_writer::start_div('tab-pane fade show active', [
+    $defaultpaneclass = ($tab === 'default') ? 'tab-pane fade show active' : 'tab-pane fade';
+    echo html_writer::start_div($defaultpaneclass, [
         'id' => 'default-icons',
         'role' => 'tabpanel',
         'aria-labelledby' => 'default-tab',
@@ -429,7 +487,8 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo html_writer::end_div(); // End Tab 1.
 
     // Tab 2: Individual Icons.
-    echo html_writer::start_div('tab-pane fade', [
+    $individualpaneclass = ($tab === 'individual') ? 'tab-pane fade show active' : 'tab-pane fade';
+    echo html_writer::start_div($individualpaneclass, [
         'id' => 'individual-icons',
         'role' => 'tabpanel',
         'aria-labelledby' => 'individual-tab',

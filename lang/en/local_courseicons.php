@@ -59,3 +59,8 @@ $string['successupdated'] = 'The activity icon has been successfully updated.';
 $string['uploaddefaulticon'] = 'Upload default icon for: {$a}';
 $string['uploadicon'] = 'SVG/Image/GIF Icon for: {$a}';
 $string['uploadiconbulk'] = 'Upload SVG/Image/GIF for {$a} selected activities';
+$string['selectfromlibrary'] = 'Choose from library';
+$string['uploadcustom'] = 'Upload custom file';
+$string['searchlibrary'] = 'Search library...';
+$string['noiconsfound'] = 'No icons found matching your search.';
+

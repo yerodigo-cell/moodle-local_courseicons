@@ -120,8 +120,8 @@ define([], function() {
                                     tileIcon.style.setProperty('width', '100%', 'important');
                                 }
                             } else if (m4Container) {
-                                img.style.setProperty('width', '24px', 'important');
-                                img.style.setProperty('height', '24px', 'important');
+                                img.style.setProperty('width', '50px', 'important');
+                                img.style.setProperty('height', '50px', 'important');
                                 img.style.setProperty('transform', 'none', 'important');
                                 img.style.setProperty('padding', '0', 'important');
                                 img.style.setProperty('margin', '0', 'important');
@@ -129,8 +129,8 @@ define([], function() {
                                 m4Container.style.setProperty('justify-content', 'center', 'important');
                                 m4Container.style.setProperty('align-items', 'center', 'important');
                             } else {
-                                img.style.setProperty('width', '36px', 'important');
-                                img.style.setProperty('height', '36px', 'important');
+                                img.style.setProperty('width', '50px', 'important');
+                                img.style.setProperty('height', '50px', 'important');
                                 img.style.setProperty('transform', 'none', 'important');
                                 img.style.setProperty('margin-right', '12px', 'important');
                                 img.style.setProperty('vertical-align', 'middle', 'important');

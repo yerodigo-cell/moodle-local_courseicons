@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%">
+  <defs>
+    <linearGradient id="video-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="4" width="20" height="16" rx="5" fill="url(#video-grad)" />
+  <path fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M10 8.5v7l5.5-3.5z" />
+</svg>
