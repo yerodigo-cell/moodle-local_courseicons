@@ -1,10 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%">
-  <defs>
-    <linearGradient id="video-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#8b5cf6" />
-      <stop offset="100%" stop-color="#ec4899" />
-    </linearGradient>
-  </defs>
-  <rect x="2" y="4" width="20" height="16" rx="5" fill="url(#video-grad)" />
-  <path fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M10 8.5v7l5.5-3.5z" />
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 24 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;">
+    <g transform="matrix(1,0,0,1,-0,-4)">
+        <g transform="matrix(1.2,0,0,1,-2.4,0)">
+            <clipPath id="_clip1">
+                <path d="M22,9L22,15C22,17.76 20.133,20 17.833,20L6.167,20C3.867,20 2,17.76 2,15L2,9C2,6.24 3.867,4 6.167,4L17.833,4C20.133,4 22,6.24 22,9Z"/>
+            </clipPath>
+            <g clip-path="url(#_clip1)">
+                <g transform="matrix(0.833333,-0,-0,1,2,4)">
+                    <use xlink:href="#_Image2" x="0" y="0" width="24px" height="16px"/>
+                </g>
+            </g>
+        </g>
+        <g transform="matrix(0.818182,0,0,0.714286,1.818182,3.147321)">
+            <path d="M10,8.5L10,15.5L15.5,12L10,8.5Z" style="fill:white;fill-rule:nonzero;stroke:white;stroke-width:2px;"/>
+        </g>
+    </g>
+    <defs>
+        <image id="_Image2" width="24px" height="16px" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAQCAYAAAAMJL+VAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA6UlEQVQ4jZWUSxIDIQhEO3jNXCm3zRbIxhn+TmVFFeoDaeD1eX91qYDAWCogZRAEwQfBuv39Oalggatt4dg+bDg81OD0BFcBhSwuuG64fxAyviAZLtXGL2br4YL+rodzSZCevpg1sBJOcAtOYBC5L9N94OzW44Z7sVu4sVbWYOoUC8oWvPMF+PZXuJQHJcspETRVmDKO9UwlcDr4Ei5t9JzhtSOyqGU2mpalc+Zzr5dpnlq21vrQsk6bPBuxdLYFqIhyatm/91OjwfS4Buc2uD9fWYMyte0ym4Rvgtsc9PB+idWVEIWP3fUDj1U3ig19C7MAAAAASUVORK5CYII="/>
+    </defs>
 </svg>
