@@ -68,7 +68,9 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
                     var checkedCount = checkedCheckboxes.length;
 
                     if (checkedCount > 0) {
-                        if (uploadBtn.length) uploadBtn.removeAttr('disabled');
+                        if (uploadBtn.length) {
+                            uploadBtn.removeAttr('disabled');
+                        }
 
                         var hasCustom = false;
                         checkedCheckboxes.each(function() {
@@ -86,7 +88,9 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
                         }
                     } else {
                         submitBtn.attr('disabled', 'disabled');
-                        if (uploadBtn.length) uploadBtn.attr('disabled', 'disabled');
+                        if (uploadBtn.length) {
+                            uploadBtn.attr('disabled', 'disabled');
+                        }
                     }
                 };
 
@@ -129,7 +133,9 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
                 if (bulkForm.length) {
                     bulkForm.on('submit', function(e) {
                         if (submitAction === 'upload') {
-                            if (actionInput.length) actionInput.val('bulkuploadform');
+                            if (actionInput.length) {
+                                actionInput.val('bulkuploadform');
+                            }
                             return true; // Allow normal submission.
                         }
 
@@ -169,10 +175,26 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
             });
 
             // Bind Individual Icons Form
-            bindBulkForm('#courseicons-select-all', '.courseicons-bulk-checkbox', '#courseicons-bulk-submit', '#courseicons-bulk-upload', '#courseicons-bulk-form', '#courseicons-bulk-action', '.courseicons-row');
-            
+            bindBulkForm(
+                '#courseicons-select-all',
+                '.courseicons-bulk-checkbox',
+                '#courseicons-bulk-submit',
+                '#courseicons-bulk-upload',
+                '#courseicons-bulk-form',
+                '#courseicons-bulk-action',
+                '.courseicons-row'
+            );
+
             // Bind Default Icons Form
-            bindBulkForm('#courseicons-select-all-def', '.courseicons-bulk-checkbox-def', '#courseicons-bulk-def-submit', null, '#courseicons-bulk-def-form', '#courseicons-bulk-def-action', null);
+            bindBulkForm(
+                '#courseicons-select-all-def',
+                '.courseicons-bulk-checkbox-def',
+                '#courseicons-bulk-def-submit',
+                null,
+                '#courseicons-bulk-def-form',
+                '#courseicons-bulk-def-action',
+                null
+            );
         }
     };
 });

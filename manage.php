@@ -513,7 +513,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         }
 
         $hascustom = isset($defaulticons[$mname]) ? 1 : 0;
-        
+
         $statushtml = '';
         if ($hascustom) {
             $statushtml = html_writer::span(get_string('customized', 'local_courseicons'), 'badge bg-success text-white');
