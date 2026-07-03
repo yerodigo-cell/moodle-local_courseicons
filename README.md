@@ -1,30 +1,31 @@
-# VideoTrack (mod_videotrack)
+# Course Activity Icons (local_courseicons)
 
-**VideoTrack** is a custom Moodle activity module designed to embed videos and accurately track students' viewing progress. It allows teachers to condition activity completion on students watching a minimum percentage of the video, ensuring complete engagement with the educational content.
+A local plugin for Moodle that allows teachers to customize the icons of activities and resources in their courses, replacing the default ones with custom images (SVG, PNG, JPG, or GIF).
+
+## How to use it
+
+1. Enter any course where you have editing permissions.
+
+2. In the course navigation menu, click on **Customize activity icons**.
+
+3. You will see the list of course activities. Click on **Change icon** for the one you want to modify.
+
+4. Upload your file (SVG, PNG, JPG, or GIF) and save. That's it!
+
+## Pro Tip for Images
+
+While the images **do not strictly need to be square** (the plugin uses smart scaling to prevent distortion), using a **1:1 square ratio** is highly recommended. This ensures the icon perfectly fills the circular or square containers without leaving empty gaps.
 
 ## Key Features
 
-*   **Flexible Video Sources**: Supports embedding videos via external links (including YouTube, YouTube Shorts, Heygen, and other direct URLs), as well as direct MP4 file uploads.
-*   **Real-Time Progress Tracking**: Automatically monitors and records the student's highest video playback position in real time.
-*   **Resume Playback**: A smart resume button allows students to return to the exact minute and second where they left off, ensuring a seamless learning experience across multiple sessions.
-*   **Playback Control (No Forwarding)**: Prevents students from fast-forwarding or skipping ahead through parts of the video they have not yet watched.
-*   **Target-Based Completion**: Set a custom completion threshold (e.g., 80%) where the activity is automatically marked as completed once reached. Setting the target to `0` enables free viewing with unrestricted navigation.
-*   **Detailed Progress Reports**: Provides teachers with a comprehensive dashboard showing each student's highest playback percentage and current activity completion status.
+* **Default Icons:** Set a default icon for an entire activity type (e.g., all Assignments or Quizzes) in one click. Individual icons can still overwrite defaults.
 
-## How to Use It
+* **Bulk Upload:** Update multiple activities at once. Select several items and change all their icons with a single upload.
 
-### 1. Adding the Activity
-1. In your Moodle course, turn on **Edit mode**.
-2. Click **Add an activity or resource** in the desired section and select **VideoTrack**.
-3. Provide an **Activity Name**, and upload an MP4 file or enter a video link (YouTube, Shorts, or external URL).
+* **Automatic Image Optimization:** Automatically resizes large images and compresses JPG, PNG, and WebP files to save space and boost performance, keeping course loading speeds blazing fast.
 
-### 2. Setting up the Completion Condition
-1. In the activity settings, locate the **Target Percent** field.
-2. Enter the minimum percentage of the video that students must watch (e.g., `80`). 
-3. Go to the **Activity completion** section, set **Completion tracking** to *Show activity as complete when conditions are met*, and check the box **View the activityt**.
-4. Save the changes. The activity will automatically mark itself as complete for each student once they reach the target percentage.
+* **Smart Adaptability:** The plugin detects the course format (including specialized formats like Format Tiles) to match the native size and style of the icons perfectly.
 
-### 3. Accessing the Progress Report
-1. As a teacher or manager, open the VideoTrack activity.
-2. In the secondary navigation menu (tabs) of the activity, click on **Progress report**.
-3. You will see a detailed list showing each student's name, highest percentage watched, activity completion status, and last update time.
+* **Animation Support:** Allows uploading animated GIFs to bring more life and dynamism to your courses.
+
+*Developed to improve the visual experience in Moodle.*
