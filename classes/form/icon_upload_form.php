@@ -121,7 +121,7 @@ class icon_upload_form extends moodleform {
             $iscurrentinlibrary = true;
         }
 
-        $defaulttab = ($iscurrentinlibrary || empty($currentfilename)) ? 'library' : 'upload';
+        $defaulttab = 'library';
         $selectedicon = $iscurrentinlibrary ? $currentfilename : '';
 
         // Add hidden inputs for library support.

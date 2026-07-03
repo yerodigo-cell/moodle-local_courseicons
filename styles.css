@@ -255,4 +255,14 @@
 .path-local-courseicons fieldset.collapsible legend {
     cursor: default !important;
 }
+
+/* Hide caret (v) on action menus (kebab) in the manage page */
+.path-local-courseicons .action-menu .dropdown-toggle::after {
+    display: none !important;
+}
+
+/* Rotate the horizontal moremenu icon to make it vertical (kebab) */
+.path-local-courseicons .action-menu .dropdown-toggle .icon {
+    transform: rotate(90deg) !important;
+}
 /* stylelint-enable declaration-no-important */

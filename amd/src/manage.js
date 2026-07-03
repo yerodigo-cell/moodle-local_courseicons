@@ -24,13 +24,6 @@
 define(['jquery', 'core/str', 'core/notification'], function($, str, Notification) {
     return {
         init: function() {
-            var selectAll = $('#courseicons-select-all');
-            var checkboxes = $('.courseicons-bulk-checkbox');
-            var submitBtn = $('#courseicons-bulk-submit');
-            var uploadBtn = $('#courseicons-bulk-upload');
-            var bulkForm = $('#courseicons-bulk-form');
-            var actionInput = $('#courseicons-bulk-action');
-
             var searchInput = $('#courseicons-search');
             var filterSelect = $('#courseicons-filter');
             var tableRows = $('.courseicons-row');
@@ -55,58 +48,111 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
                         row.find('.courseicons-bulk-checkbox').prop('checked', false);
                     }
                 });
-                updateButtonState();
+                $('#courseicons-bulk-submit').trigger('update-state');
             };
 
             searchInput.on('input', filterTable);
             filterSelect.on('change', filterTable);
 
-            var updateButtonState = function() {
-                var checkedCheckboxes = checkboxes.filter(':checked');
-                var checkedCount = checkedCheckboxes.length;
+            var bindBulkForm = function(selectAllId, checkboxClass, submitBtnId, uploadBtnId, formId, actionInputId, rowClass) {
+                var selectAll = $(selectAllId);
+                var checkboxes = $(checkboxClass);
+                var submitBtn = $(submitBtnId);
+                var uploadBtn = uploadBtnId ? $(uploadBtnId) : $();
+                var bulkForm = $(formId);
+                var actionInput = $(actionInputId);
+                var defaultAction = actionInput.val();
 
-                if (checkedCount > 0) {
-                    uploadBtn.removeAttr('disabled');
+                var updateButtonState = function() {
+                    var checkedCheckboxes = checkboxes.filter(':checked');
+                    var checkedCount = checkedCheckboxes.length;
 
-                    var hasCustom = false;
-                    checkedCheckboxes.each(function() {
-                        if ($(this).data('hascustom') == 1) {
-                            hasCustom = true;
-                            return false; // Break loop.
+                    if (checkedCount > 0) {
+                        if (uploadBtn.length) uploadBtn.removeAttr('disabled');
+
+                        var hasCustom = false;
+                        checkedCheckboxes.each(function() {
+                            if ($(this).data('hascustom') == 1) {
+                                hasCustom = true;
+                                return false; // Break loop.
+                            }
+                            return true;
+                        });
+
+                        if (hasCustom) {
+                            submitBtn.removeAttr('disabled');
+                        } else {
+                            submitBtn.attr('disabled', 'disabled');
                         }
-                        return true;
-                    });
-
-                    if (hasCustom) {
-                        submitBtn.removeAttr('disabled');
                     } else {
                         submitBtn.attr('disabled', 'disabled');
+                        if (uploadBtn.length) uploadBtn.attr('disabled', 'disabled');
                     }
-                } else {
-                    submitBtn.attr('disabled', 'disabled');
-                    uploadBtn.attr('disabled', 'disabled');
+                };
+
+                // Expose update state for filtering
+                submitBtn.on('update-state', updateButtonState);
+
+                selectAll.on('change', function() {
+                    var isChecked = $(this).prop('checked');
+                    checkboxes.each(function() {
+                        if (rowClass) {
+                            if ($(this).closest(rowClass).is(':visible')) {
+                                $(this).prop('checked', isChecked);
+                            }
+                        } else {
+                            $(this).prop('checked', isChecked);
+                        }
+                    });
+                    updateButtonState();
+                });
+
+                checkboxes.on('change', function() {
+                    if (!$(this).prop('checked')) {
+                        selectAll.prop('checked', false);
+                    }
+                    updateButtonState();
+                });
+
+                var submitAction = 'delete';
+                if (submitBtn.length) {
+                    submitBtn.on('click', function() {
+                        submitAction = 'delete';
+                    });
+                }
+                if (uploadBtn.length) {
+                    uploadBtn.on('click', function() {
+                        submitAction = 'upload';
+                    });
+                }
+
+                if (bulkForm.length) {
+                    bulkForm.on('submit', function(e) {
+                        if (submitAction === 'upload') {
+                            if (actionInput.length) actionInput.val('bulkuploadform');
+                            return true; // Allow normal submission.
+                        }
+
+                        e.preventDefault();
+                        if (actionInput.length) {
+                            actionInput.val(defaultAction);
+                        }
+                        var confirmMsg = submitBtn.data('confirm');
+
+                        str.get_strings([
+                            {key: 'confirm'},
+                            {key: 'delete'}
+                        ]).done(function(s) {
+                            Notification.confirm(s[0], confirmMsg, s[1], s[0], function() {
+                                bulkForm[0].submit();
+                            });
+                        });
+                        return false;
+                    });
                 }
             };
 
-            selectAll.on('change', function() {
-                // Only select visible checkboxes.
-                var isChecked = $(this).prop('checked');
-                checkboxes.each(function() {
-                    if ($(this).closest('.courseicons-row').is(':visible')) {
-                        $(this).prop('checked', isChecked);
-                    }
-                });
-                updateButtonState();
-            });
-
-            checkboxes.on('change', function() {
-                if (!$(this).prop('checked')) {
-                    selectAll.prop('checked', false);
-                }
-                updateButtonState();
-            });
-
-            // Single delete confirm.
+            // Single delete confirm is generic
             $('.courseicons-delete-single').on('click', function(e) {
                 e.preventDefault();
                 var link = $(this).attr('href');
@@ -122,35 +168,11 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
                 });
             });
 
-            var submitAction = 'delete';
-            submitBtn.on('click', function() {
-                submitAction = 'delete';
-            });
-            uploadBtn.on('click', function() {
-                submitAction = 'upload';
-            });
-
-            // Bulk actions.
-            bulkForm.on('submit', function(e) {
-                if (submitAction === 'upload') {
-                    actionInput.val('bulkuploadform');
-                    return true; // Allow normal submission.
-                }
-
-                e.preventDefault();
-                actionInput.val('bulkdelete');
-                var confirmMsg = submitBtn.data('confirm');
-
-                str.get_strings([
-                    {key: 'confirm'},
-                    {key: 'delete'}
-                ]).done(function(s) {
-                    Notification.confirm(s[0], confirmMsg, s[1], s[0], function() {
-                        bulkForm[0].submit();
-                    });
-                });
-                return false;
-            });
+            // Bind Individual Icons Form
+            bindBulkForm('#courseicons-select-all', '.courseicons-bulk-checkbox', '#courseicons-bulk-submit', '#courseicons-bulk-upload', '#courseicons-bulk-form', '#courseicons-bulk-action', '.courseicons-row');
+            
+            // Bind Default Icons Form
+            bindBulkForm('#courseicons-select-all-def', '.courseicons-bulk-checkbox-def', '#courseicons-bulk-def-submit', null, '#courseicons-bulk-def-form', '#courseicons-bulk-def-action', null);
         }
     };
 });

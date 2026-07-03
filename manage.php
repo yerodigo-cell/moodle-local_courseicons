@@ -106,6 +106,30 @@ if ($action === 'delete') {
     } else {
         redirect($url);
     }
+} else if ($action === 'bulkdeletedefaults') {
+    require_sesskey();
+    $defmodnames = optional_param_array('defmodnames', [], PARAM_ALPHANUMEXT);
+    if (!empty($defmodnames)) {
+        $fs = get_file_storage();
+        foreach ($defmodnames as $dmodname) {
+            if ($defrecord = $DB->get_record('local_courseicons_def', ['courseid' => $course->id, 'modname' => $dmodname])) {
+                $DB->delete_records('local_courseicons_def', ['id' => $defrecord->id]);
+                $fs->delete_area_files($context->id, 'local_courseicons', 'defaulticon', $defrecord->id);
+            }
+        }
+
+        cache::make('local_courseicons', 'course_css')->delete($course->id);
+
+        $redirecturl = new moodle_url($url, ['tab' => 'default']);
+        redirect(
+            $redirecturl,
+            get_string('successdeleted', 'local_courseicons'),
+            null,
+            \core\output\notification::NOTIFY_SUCCESS
+        );
+    } else {
+        redirect(new moodle_url($url, ['tab' => 'default']));
+    }
 }
 
 $bulkcmids = optional_param('bulkcmids', '', PARAM_SEQUENCE);
@@ -411,15 +435,37 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
 
     $deftable = new html_table();
     $deftable->head = [
+        html_writer::empty_tag('input', [
+            'type' => 'checkbox',
+            'id' => 'courseicons-select-all-def',
+            'title' => get_string('selectall'),
+            'class' => 'm-0',
+        ]),
         get_string('activitytypes', 'local_courseicons'),
         get_string('preview', 'local_courseicons'),
-        get_string('action'),
+        get_string('currenticon', 'local_courseicons'),
+        html_writer::span(get_string('actions'), 'sr-only'),
     ];
-    $deftable->attributes['class'] = 'generaltable table table-striped align-middle mb-5';
+    $deftable->attributes['class'] = 'generaltable table table-hover align-middle';
 
     foreach ($modnames as $mname => $pluginname) {
         $previewhtml = '';
         $actionhtml = '';
+
+        $actionmenu = new action_menu();
+        $actionmenu->set_menu_trigger($OUTPUT->pix_icon('i/moremenu', get_string('actions')));
+        $actionmenu->set_boundary('window');
+
+        $editurl = new moodle_url('/local/courseicons/manage.php', [
+            'id' => $course->id,
+            'defmodname' => $mname,
+        ]);
+
+        $actionmenu->add(new action_menu_link_secondary(
+            $editurl,
+            new pix_icon('t/edit', get_string('edit')),
+            get_string('edit')
+        ));
 
         if (isset($defaulticons[$mname])) {
             $defrecord = $defaulticons[$mname];
@@ -450,12 +496,12 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
                     'sesskey' => sesskey(),
                 ]);
 
-                $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
-                $delaction = html_writer::link($delurl, $delicon, [
-                    'class' => 'courseicons-delete-single ms-2 text-danger',
-                    'data-confirm' => get_string('deleteiconconfirm', 'local_courseicons'),
-                ]);
-                $previewhtml .= $delaction;
+                $actionmenu->add(new action_menu_link_secondary(
+                    $delurl,
+                    new pix_icon('t/delete', get_string('delete')),
+                    get_string('delete'),
+                    ['data-confirm' => get_string('deleteiconconfirm', 'local_courseicons'), 'class' => 'text-danger']
+                ));
             }
         } else {
             $previewhtml = $OUTPUT->pix_icon(
@@ -466,24 +512,63 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
             );
         }
 
-        $editurl = new moodle_url('/local/courseicons/manage.php', [
-            'id' => $course->id,
-            'defmodname' => $mname,
+        $hascustom = isset($defaulticons[$mname]) ? 1 : 0;
+        
+        $statushtml = '';
+        if ($hascustom) {
+            $statushtml = html_writer::span(get_string('customized', 'local_courseicons'), 'badge bg-success text-white');
+        } else {
+            $statushtml = html_writer::span(get_string('default', 'local_courseicons'), 'badge bg-secondary text-white');
+        }
+
+        $checkboxhtml = html_writer::empty_tag('input', [
+            'type' => 'checkbox',
+            'name' => 'defmodnames[]',
+            'value' => $mname,
+            'class' => 'courseicons-bulk-checkbox-def m-0',
+            'data-hascustom' => $hascustom,
         ]);
-        $actionhtml = html_writer::link(
-            $editurl,
-            get_string('setdefaulticon', 'local_courseicons'),
-            ['class' => 'btn btn-sm btn-outline-primary']
-        );
+
+        $actionhtml = $OUTPUT->render($actionmenu);
 
         $modicon = $OUTPUT->pix_icon('monologo', '', $mname, ['class' => 'icon']);
         $modnamecell = $modicon . ' ' . format_string($pluginname);
 
-        $row = new html_table_row([$modnamecell, $previewhtml, $actionhtml]);
+        $cellaction = new html_table_cell($actionhtml);
+        $cellaction->attributes['class'] = 'text-end';
+
+        $row = new html_table_row([$checkboxhtml, $modnamecell, $previewhtml, $statushtml, $cellaction]);
         $deftable->data[] = $row;
     }
 
+    echo html_writer::start_tag('form', [
+        'action' => new moodle_url('/local/courseicons/manage.php'),
+        'method' => 'post',
+        'id' => 'courseicons-bulk-def-form',
+    ]);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $course->id]);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+    echo html_writer::empty_tag('input', [
+        'type' => 'hidden',
+        'name' => 'action',
+        'id' => 'courseicons-bulk-def-action',
+        'value' => 'bulkdeletedefaults',
+    ]);
+
     echo html_writer::table($deftable);
+
+    echo html_writer::start_div('mt-3 mb-5');
+    echo html_writer::empty_tag('input', [
+        'type' => 'submit',
+        'value' => get_string('bulkdelete', 'local_courseicons'),
+        'class' => 'btn btn-secondary',
+        'id' => 'courseicons-bulk-def-submit',
+        'data-confirm' => get_string('deleteselectedconfirm', 'local_courseicons'),
+        'disabled' => 'disabled',
+    ]);
+    echo html_writer::end_div();
+
+    echo html_writer::end_tag('form');
     echo html_writer::end_div(); // End Tab 1.
 
     // Tab 2: Individual Icons.
@@ -521,12 +606,14 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
             'type' => 'checkbox',
             'id' => 'courseicons-select-all',
             'title' => get_string('selectall'),
+            'class' => 'm-0',
         ]),
         get_string('modulename', 'local_courseicons'),
         get_string('preview', 'local_courseicons'),
         get_string('currenticon', 'local_courseicons'),
+        html_writer::span(get_string('actions'), 'sr-only'),
     ];
-    $table->attributes['class'] = 'generaltable table table-striped align-middle';
+    $table->attributes['class'] = 'generaltable table table-hover align-middle';
 
     foreach ($modinfo->cms as $module) {
         // Ignore labels, subsections (M4.3+), question banks (M5.x+) or structural items.
@@ -542,9 +629,24 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
             'type' => 'checkbox',
             'name' => 'cmids[]',
             'value' => $module->id,
-            'class' => 'courseicons-bulk-checkbox',
+            'class' => 'courseicons-bulk-checkbox m-0',
             'data-hascustom' => $hascustom,
         ]);
+
+        $actionmenu = new action_menu();
+        $actionmenu->set_menu_trigger($OUTPUT->pix_icon('i/moremenu', get_string('actions')));
+        $actionmenu->set_boundary('window');
+
+        $editurl = new moodle_url('/local/courseicons/manage.php', [
+            'id' => $course->id,
+            'cmid' => $module->id,
+        ]);
+
+        $actionmenu->add(new action_menu_link_secondary(
+            $editurl,
+            new pix_icon('t/edit', get_string('edit')),
+            get_string('edit')
+        ));
 
         if (isset($customicons[$module->id])) {
             $record = $customicons[$module->id];
@@ -579,12 +681,12 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
                     'sesskey' => sesskey(),
                 ]);
 
-                $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
-                $delaction = html_writer::link($delurl, $delicon, [
-                    'class' => 'courseicons-delete-single ms-2',
-                    'data-confirm' => get_string('deleteiconconfirm', 'local_courseicons'),
-                ]);
-                $previewhtml .= $delaction;
+                $actionmenu->add(new action_menu_link_secondary(
+                    $delurl,
+                    new pix_icon('t/delete', get_string('delete')),
+                    get_string('delete'),
+                    ['data-confirm' => get_string('deleteiconconfirm', 'local_courseicons'), 'class' => 'text-danger']
+                ));
             }
         } else {
             $status = html_writer::span($strdefault, 'badge badge-secondary bg-secondary text-white');
@@ -598,10 +700,15 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
             );
         }
 
+        $actionhtml = $OUTPUT->render($actionmenu);
+
         $modicon = $OUTPUT->pix_icon('monologo', '', $module->modname, ['class' => 'icon']);
         $modnamecell = $modicon . ' ' . format_string($module->name);
 
-        $row = new html_table_row([$checkboxhtml, $modnamecell, $previewhtml, $status]);
+        $cellaction = new html_table_cell($actionhtml);
+        $cellaction->attributes['class'] = 'text-end';
+
+        $row = new html_table_row([$checkboxhtml, $modnamecell, $previewhtml, $status, $cellaction]);
         $row->attributes['class'] = 'courseicons-row';
         $row->attributes['data-modname'] = $module->modname;
         $row->attributes['data-name'] = format_string($module->name);
