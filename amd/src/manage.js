@@ -34,8 +34,8 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
 
                 tableRows.each(function() {
                     var row = $(this);
-                    var modname = row.data('modname');
-                    var name = row.data('name').toLowerCase();
+                    var modname = String(row.data('modname') || '');
+                    var name = String(row.data('name') || '').toLowerCase();
 
                     var matchSearch = name.indexOf(searchText) !== -1;
                     var matchFilter = filterType === 'all' || modname === filterType;

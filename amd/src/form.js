@@ -36,11 +36,11 @@ define(['jquery'], function($) {
 
             var updateTabVisibility = function(targetTab) {
                 if (targetTab === 'library') {
-                    libraryRow.show();
-                    filemanagerRow.hide();
+                    libraryRow.removeClass('courseicons-hidden');
+                    filemanagerRow.addClass('courseicons-hidden');
                 } else {
-                    libraryRow.hide();
-                    filemanagerRow.show();
+                    libraryRow.addClass('courseicons-hidden');
+                    filemanagerRow.removeClass('courseicons-hidden');
                 }
             };
 
