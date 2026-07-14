@@ -208,7 +208,8 @@
 
 /* Full width form items override for courseicons custom form layout */
 /* stylelint-disable declaration-no-important */
-.courseicons-hidden {
+#fitem_id_tab_pane_library.courseicons-hidden,
+#fitem_id_iconfile_filemanager.courseicons-hidden {
     display: none !important;
 }
 
