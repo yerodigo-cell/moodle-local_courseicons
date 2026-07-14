@@ -1,0 +1,10 @@
+* text=auto
+
+# Force LF for all javascript and map files
+*.js text eol=lf
+*.map text eol=lf
+*.css text eol=lf
+*.php text eol=lf
+*.json text eol=lf
+*.svg text eol=lf
+*.md text eol=lf
