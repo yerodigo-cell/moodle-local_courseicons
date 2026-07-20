@@ -3,6 +3,43 @@
 <svg width="100%" height="100%" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g transform="matrix(21.333333,0,0,21.333333,0,0)">
         <path d="M2,15L11,15L11,24L7,24C4.257,24 2,21.743 2,19L2,15ZM24,11C24,12.097 23.097,13 22,13L13,13L13,8.957C12.664,8.983 12.329,9 12,9C11.671,9 11.336,8.983 11,8.957L11,13L2,13C0.903,13 0,12.097 0,11C-0,8.806 1.806,7 4,7L5.738,7C4.594,5.992 3.957,4.524 4,3C4,2.451 4.451,2 5,2C5.549,2 6,2.451 6,3C6,5.622 8.371,6.53 10.174,6.841C9.509,5.661 9.108,4.35 9,3C9,1.354 10.354,0 12,0C13.646,-0 15,1.354 15,3C14.892,4.35 14.491,5.661 13.826,6.841C15.629,6.53 18,5.622 18,3C18,2.451 18.451,2 19,2C19.549,2 20,2.451 20,3C20.043,4.524 19.406,5.992 18.262,7L20,7C22.194,7 24,8.806 24,11ZM11,3C11.121,4.063 11.461,5.089 12,6.013C12.539,5.089 12.879,4.063 13,3C13,2.451 12.549,2 12,2C11.451,2 11,2.451 11,3ZM13,24L17,24C19.743,24 22,21.743 22,19L22,15L13,15L13,24Z" style="fill:url(#_Linear1);fill-rule:nonzero;"/>
+        <g id="sparkles" fill="#FFFFFF">
+            <g transform="translate(5, 10)">
+                <path d="M0,-1.5 Q0,0 1.5,0 Q0,0 0,1.5 Q0,0 -1.5,0 Q0,0 0,-1.5">
+                    <animateTransform attributeName="transform" type="scale" values="0; 1; 0" dur="2s" begin="0s" repeatCount="indefinite" />
+                </path>
+            </g>
+            <g transform="translate(19, 10)">
+                <path d="M0,-2 Q0,0 2,0 Q0,0 0,2 Q0,0 -2,0 Q0,0 0,-2">
+                    <animateTransform attributeName="transform" type="scale" values="0; 1; 0" dur="1.5s" begin="0.5s" repeatCount="indefinite" />
+                </path>
+            </g>
+            <g transform="translate(6, 20)">
+                <path d="M0,-1 Q0,0 1,0 Q0,0 0,1 Q0,0 -1,0 Q0,0 0,-1">
+                    <animateTransform attributeName="transform" type="scale" values="0; 1; 0" dur="2.5s" begin="1s" repeatCount="indefinite" />
+                </path>
+            </g>
+            <g transform="translate(18, 20)">
+                <path d="M0,-1.5 Q0,0 1.5,0 Q0,0 0,1.5 Q0,0 -1.5,0 Q0,0 0,-1.5">
+                    <animateTransform attributeName="transform" type="scale" values="0; 1; 0" dur="1.8s" begin="1.2s" repeatCount="indefinite" />
+                </path>
+            </g>
+            <g transform="translate(12, 15)">
+                <path d="M0,-2 Q0,0 2,0 Q0,0 0,2 Q0,0 -2,0 Q0,0 0,-2">
+                    <animateTransform attributeName="transform" type="scale" values="0; 1; 0" dur="2.2s" begin="0.8s" repeatCount="indefinite" />
+                </path>
+            </g>
+            <g transform="translate(6, 4)">
+                <path d="M0,-1.2 Q0,0 1.2,0 Q0,0 0,1.2 Q0,0 -1.2,0 Q0,0 0,-1.2">
+                    <animateTransform attributeName="transform" type="scale" values="0; 1; 0" dur="1.7s" begin="0.2s" repeatCount="indefinite" />
+                </path>
+            </g>
+            <g transform="translate(18, 4)">
+                <path d="M0,-1.2 Q0,0 1.2,0 Q0,0 0,1.2 Q0,0 -1.2,0 Q0,0 0,-1.2">
+                    <animateTransform attributeName="transform" type="scale" values="0; 1; 0" dur="2.1s" begin="0.9s" repeatCount="indefinite" />
+                </path>
+            </g>
+        </g>
     </g>
     <defs>
         <linearGradient id="_Linear1" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(24,0,0,24,0,12)"><stop offset="0" style="stop-color:rgb(67,243,168);stop-opacity:1"/><stop offset="1" style="stop-color:rgb(0,124,255);stop-opacity:1"/></linearGradient>

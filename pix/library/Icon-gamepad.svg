@@ -7,6 +7,38 @@
         </clipPath>
         <g clip-path="url(#_clip1)">
             <path d="M212.051,48.359C203.457,33.082 188.18,24.488 170.992,24.488L57.367,24.488C40.184,24.488 24.906,33.082 16.312,48.359C5.809,67.453 0.078,88.461 0.078,110.422C0.078,162.938 21.086,205.902 47.82,205.902C62.141,205.902 73.602,192.535 82.195,164.848C83.148,161.027 86.969,158.164 91.742,158.164L138.527,158.164C142.348,158.164 146.168,161.027 148.078,164.848C156.672,192.535 168.129,205.902 182.449,205.902C209.188,205.902 230.191,162.938 230.191,110.422C228.281,88.461 222.555,67.453 212.051,48.359ZM86.012,100.875L76.465,100.875L76.465,110.422C76.465,116.148 72.645,119.969 66.918,119.969C61.188,119.969 57.367,116.148 57.367,110.422L57.367,100.875L47.82,100.875C42.094,100.875 38.273,97.055 38.273,91.324C38.273,85.598 42.094,81.777 47.82,81.777L57.367,81.777L57.367,72.23C57.367,66.5 61.188,62.68 66.918,62.68C72.645,62.68 76.465,66.5 76.465,72.23L76.465,81.777L86.012,81.777C91.742,81.777 95.562,85.598 95.562,91.324C95.562,97.055 91.742,100.875 86.012,100.875ZM149.031,119.969C141.395,119.969 134.711,113.285 134.711,105.648C134.711,98.008 141.395,91.324 149.031,91.324C156.672,91.324 163.355,98.008 163.355,105.648C163.355,113.285 155.715,119.969 149.031,119.969ZM176.723,91.324C170.039,91.324 162.398,84.641 162.398,77.004C162.398,69.363 170.039,62.68 176.723,62.68C183.406,62.68 191.043,69.363 191.043,77.004C191.043,84.641 184.359,91.324 176.723,91.324Z" style="fill:url(#_Linear2);fill-rule:nonzero;"/>
+            <g id="sparkles" fill="#FFFFFF">
+                <g transform="translate(40, 50)">
+                    <path d="M0,-15 Q0,0 15,0 Q0,0 0,15 Q0,0 -15,0 Q0,0 0,-15">
+                        <animateTransform attributeName="transform" type="scale" values="0; 1.5; 0" dur="2s" begin="0s" repeatCount="indefinite" />
+                    </path>
+                </g>
+                <g transform="translate(180, 50)">
+                    <path d="M0,-10 Q0,0 10,0 Q0,0 0,10 Q0,0 -10,0 Q0,0 0,-10">
+                        <animateTransform attributeName="transform" type="scale" values="0; 2; 0" dur="1.5s" begin="0.5s" repeatCount="indefinite" />
+                    </path>
+                </g>
+                <g transform="translate(200, 160)">
+                    <path d="M0,-12 Q0,0 12,0 Q0,0 0,12 Q0,0 -12,0 Q0,0 0,-12">
+                        <animateTransform attributeName="transform" type="scale" values="0; 1.8; 0" dur="2.5s" begin="1s" repeatCount="indefinite" />
+                    </path>
+                </g>
+                <g transform="translate(30, 160)">
+                    <path d="M0,-10 Q0,0 10,0 Q0,0 0,10 Q0,0 -10,0 Q0,0 0,-10">
+                        <animateTransform attributeName="transform" type="scale" values="0; 1.5; 0" dur="1.8s" begin="1.2s" repeatCount="indefinite" />
+                    </path>
+                </g>
+                <g transform="translate(115, 45)">
+                    <path d="M0,-10 Q0,0 10,0 Q0,0 0,10 Q0,0 -10,0 Q0,0 0,-10">
+                        <animateTransform attributeName="transform" type="scale" values="0; 1.5; 0" dur="2.2s" begin="0.8s" repeatCount="indefinite" />
+                    </path>
+                </g>
+                <g transform="translate(115, 140)">
+                    <path d="M0,-15 Q0,0 15,0 Q0,0 0,15 Q0,0 -15,0 Q0,0 0,-15">
+                        <animateTransform attributeName="transform" type="scale" values="0; 1.2; 0" dur="2s" begin="1.5s" repeatCount="indefinite" />
+                    </path>
+                </g>
+            </g>
         </g>
     </g>
     <defs>
