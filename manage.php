@@ -557,7 +557,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
 
     echo html_writer::table($deftable);
 
-    echo html_writer::start_div('mt-3 mb-5');
+    echo html_writer::start_div('mt-3 mb-5 courseicons-floating-buttons');
     echo html_writer::empty_tag('input', [
         'type' => 'submit',
         'value' => get_string('bulkdelete', 'local_courseicons'),
@@ -731,7 +731,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
 
     echo html_writer::table($table);
 
-    echo html_writer::start_div('mt-3');
+    echo html_writer::start_div('mt-3 courseicons-floating-buttons');
     echo html_writer::empty_tag('input', [
         'type' => 'submit',
         'value' => get_string('bulkupload', 'local_courseicons'),

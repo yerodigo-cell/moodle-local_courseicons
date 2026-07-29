@@ -275,4 +275,18 @@
 .path-local-courseicons .action-menu .dropdown-toggle .icon {
     transform: rotate(90deg) !important;
 }
+
+/* Floating buttons for bulk actions */
+.courseicons-floating-buttons {
+    position: sticky;
+    bottom: 20px;
+    z-index: 1040;
+    display: flex;
+    align-items: center;
+    pointer-events: none; /* Let clicks pass through the invisible container */
+}
+
+.courseicons-floating-buttons > * {
+    pointer-events: auto; /* Re-enable clicks on the buttons themselves */
+}
 /* stylelint-enable declaration-no-important */

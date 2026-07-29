@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_courseicons';
-$plugin->version   = 2026072000;
+$plugin->version   = 2026072800;
 $plugin->requires  = 2022041900;
-$plugin->release   = 'v2.1.4';
+$plugin->release   = 'v2.1.5';
 $plugin->maturity  = MATURITY_STABLE;
