@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version details.
+ * Settings for local_courseicons.
  *
  * @package    local_courseicons
  * @copyright  2026 Yeison Díaz
@@ -24,8 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_courseicons';
-$plugin->version   = 2026080800;
-$plugin->requires  = 2022041900;
-$plugin->release   = 'v2.1.5';
-$plugin->maturity  = MATURITY_STABLE;
+if ($hassiteconfig) {
+    // Add external page link to the Local plugins section.
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'local_courseicons',
+        get_string('globalmanage', 'local_courseicons'),
+        new moodle_url('/local/courseicons/globalmanage.php'),
+        'moodle/site:config'
+    ));
+}

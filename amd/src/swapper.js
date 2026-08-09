@@ -25,6 +25,19 @@ define([], function() {
     return {
         init: function(icons, defaults) {
             if ((!icons || icons.length === 0) && (!defaults || defaults.length === 0)) {
+                const dataElement = document.getElementById('local-courseicons-data');
+                if (dataElement) {
+                    try {
+                        const data = JSON.parse(dataElement.textContent);
+                        icons = data.icons || [];
+                        defaults = data.defaults || [];
+                    } catch (e) {
+                        // JSON parsing failed, fail silently.
+                    }
+                }
+            }
+
+            if ((!icons || icons.length === 0) && (!defaults || defaults.length === 0)) {
                 return;
             }
 

@@ -49,7 +49,8 @@ function local_courseicons_standard_head_html(): string {
 
     $records = $DB->get_records('local_courseicons', ['courseid' => $COURSE->id]);
     $defaults = $DB->get_records('local_courseicons_def', ['courseid' => $COURSE->id]);
-    if (empty($records) && empty($defaults)) {
+    $globals = $DB->get_records('local_courseicons_global');
+    if (empty($records) && empty($defaults) && empty($globals)) {
         $cache->set($COURSE->id, 'empty');
         return '';
     }
@@ -64,8 +65,71 @@ function local_courseicons_standard_head_html(): string {
     $selectorstileicon = [];
     $selectorstilecontainer = [];
     $dynamiccontent = '';
+    
+    $icondata = [];
+    $defaultdata = [];
+    $globaldata = [];
 
-    // Process defaults first (so individual overrides them if they have same specificity).
+    // Process globals first (lowest specificity).
+    foreach ($globals as $globalrecord) {
+        $syscontext = context_system::instance();
+        $files = $fs->get_area_files($syscontext->id, 'local_courseicons', 'globalicon', $globalrecord->id, 'id', false);
+        if (!empty($files)) {
+            $file = reset($files);
+            if ($file->get_filesize() <= 102400) {
+                $mimetype = $file->get_mimetype();
+                $base64 = base64_encode($file->get_content());
+                $url = "data:{$mimetype};base64,{$base64}";
+            } else {
+                $murl = moodle_url::make_pluginfile_url(
+                    $syscontext->id,
+                    'local_courseicons',
+                    'globalicon',
+                    $globalrecord->id,
+                    '/',
+                    $file->get_filename()
+                );
+                $murl->param('t', $globalrecord->timemodified);
+                $url = $murl->out(false);
+            }
+
+            $modname = $globalrecord->modname;
+            $globaldata[] = ['modname' => $modname, 'url' => $url];
+
+            // Group selectors for static rules.
+            $selectorsbg[] = ".path-course-view .activity-item.modtype_{$modname} .activityiconcontainer, " .
+                ".path-mod-{$modname} .activity-item.modtype_{$modname} .activityiconcontainer";
+            $selectorsbg[] = ".path-course-view li.activity.{$modname} .activityiconcontainer";
+            $selectorsbg[] = ".path-course-view li.subtile.{$modname} .tile-icon";
+            $selectorsbg[] = ".path-mod-{$modname} .page-header-image .activityiconcontainer";
+            $selectorsbg[] = ".path-mod-{$modname} .page-header-headings .activityiconcontainer";
+
+            $selicon = [
+                ".path-course-view .activity-item.modtype_{$modname} .activityiconcontainer img, " .
+                ".path-mod-{$modname} .activity-item.modtype_{$modname} .activityiconcontainer img",
+                ".path-course-view li.activity.{$modname} .activityiconcontainer img",
+                ".path-course-view li.activity.{$modname} .activityinstance > a > img.activityicon",
+                ".path-course-view li.activity.{$modname} .activityinstance > a > img.icon",
+            ];
+            $selectorsicon = array_merge($selectorsicon, $selicon);
+
+            $selheader = [
+                ".path-mod-{$modname} .page-header-image img",
+                ".path-mod-{$modname} .page-header-headings img.activityicon",
+            ];
+            $selectorsheadericon = array_merge($selectorsheadericon, $selheader);
+
+            $seltile = [".path-course-view li.subtile.{$modname} .tile-icon img"];
+            $selectorstileicon = array_merge($selectorstileicon, $seltile);
+
+            $selectorstilecontainer[] = ".path-course-view li.subtile.{$modname} .tile-icon";
+
+            $dynamiccontent .= implode(', ', $selicon) . ", " . implode(', ', $selheader) .
+                ", " . implode(', ', $seltile) . " { content: url('{$url}') !important; }\n";
+        }
+    }
+
+    // Process defaults next (so individual overrides them if they have same specificity).
     foreach ($defaults as $defrecord) {
         $coursecontext = context_course::instance($COURSE->id);
         $files = $fs->get_area_files($coursecontext->id, 'local_courseicons', 'defaulticon', $defrecord->id, 'id', false);
@@ -89,6 +153,7 @@ function local_courseicons_standard_head_html(): string {
             }
 
             $modname = $defrecord->modname;
+            $defaultdata[] = ['modname' => $modname, 'url' => $url];
 
             // Group selectors for static rules.
             $selectorsbg[] = ".path-course-view .activity-item.modtype_{$modname} .activityiconcontainer, " .
@@ -152,6 +217,7 @@ function local_courseicons_standard_head_html(): string {
             }
 
             $cmid = $record->cmid;
+            $icondata[] = ['cmid' => $cmid, 'url' => $url];
 
             // Group selectors for static rules.
             $selectorsbg[] = ".path-course-view .activity-item[data-id=\"{$cmid}\"] .activityiconcontainer, " .
@@ -228,6 +294,10 @@ function local_courseicons_standard_head_html(): string {
     }
 
     $css .= "</style>\n";
+    if (!empty($icondata) || !empty($defaultdata) || !empty($globaldata)) {
+        $jsondata = json_encode(['icons' => $icondata, 'defaults' => $defaultdata, 'globals' => $globaldata]);
+        $css .= "<script id=\"local-courseicons-data\" type=\"application/json\">{$jsondata}</script>\n";
+    }
     $finalhtml = $css;
 
     $cache->set($COURSE->id, $finalhtml);
@@ -270,68 +340,8 @@ function local_courseicons_extend_navigation(global_navigation $navigation): voi
     }
     $jsloaded = true;
 
-    $records = $DB->get_records('local_courseicons', ['courseid' => $COURSE->id]);
-    $defaults = $DB->get_records('local_courseicons_def', ['courseid' => $COURSE->id]);
-
-    if (!empty($records) || !empty($defaults)) {
-        $icondata = [];
-        $defaultdata = [];
-        $fs = get_file_storage();
-
-        foreach ($records as $record) {
-            $modcontext = context_module::instance($record->cmid, IGNORE_MISSING);
-            if (!$modcontext) {
-                continue;
-            }
-
-            $files = $fs->get_area_files($modcontext->id, 'local_courseicons', 'activityicon', 0, 'id', false);
-
-            if (!empty($files)) {
-                $file = reset($files);
-                $murl = moodle_url::make_pluginfile_url(
-                    $modcontext->id,
-                    'local_courseicons',
-                    'activityicon',
-                    0,
-                    '/',
-                    $file->get_filename()
-                );
-                $murl->param('t', $record->timemodified);
-
-                $icondata[] = [
-                    'cmid' => $record->cmid,
-                    'url' => $murl->out(false),
-                ];
-            }
-        }
-
-        $coursecontext = context_course::instance($COURSE->id);
-        foreach ($defaults as $defrecord) {
-            $files = $fs->get_area_files($coursecontext->id, 'local_courseicons', 'defaulticon', $defrecord->id, 'id', false);
-            if (!empty($files)) {
-                $file = reset($files);
-                $murl = moodle_url::make_pluginfile_url(
-                    $coursecontext->id,
-                    'local_courseicons',
-                    'defaulticon',
-                    $defrecord->id,
-                    '/',
-                    $file->get_filename()
-                );
-                $murl->param('t', $defrecord->timemodified);
-
-                $defaultdata[] = [
-                    'modname' => $defrecord->modname,
-                    'url' => $murl->out(false),
-                ];
-            }
-        }
-
-        if (!empty($icondata) || !empty($defaultdata)) {
-            // Send data to JS for deep DOM manipulation.
-            $PAGE->requires->js_call_amd('local_courseicons/swapper', 'init', [$icondata, $defaultdata]);
-        }
-    }
+    // Trigger the AMD module which will read its data from the JSON script injected by standard_head_html.
+    $PAGE->requires->js_call_amd('local_courseicons/swapper', 'init');
 }
 
 /**
@@ -381,17 +391,17 @@ function local_courseicons_pluginfile(
     $forcedownload,
     array $options = []
 ) {
-    if ($context->contextlevel != CONTEXT_MODULE && $context->contextlevel != CONTEXT_COURSE) {
+    if ($context->contextlevel != CONTEXT_MODULE && $context->contextlevel != CONTEXT_COURSE && $context->contextlevel != CONTEXT_SYSTEM) {
         return false;
     }
 
-    if ($filearea !== 'activityicon' && $filearea !== 'defaulticon') {
+    if ($filearea !== 'activityicon' && $filearea !== 'defaulticon' && $filearea !== 'globalicon') {
         return false;
     }
 
     if ($context->contextlevel == CONTEXT_MODULE) {
         require_course_login($course, true, $cm);
-    } else {
+    } else if ($context->contextlevel == CONTEXT_COURSE) {
         require_course_login($course);
     }
 
