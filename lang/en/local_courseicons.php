@@ -47,6 +47,8 @@ $string['globalicons'] = 'Global default icons';
 $string['globaliconsdesc'] = 'Set a default icon for all activities of a specific type across the entire Moodle site. Course-specific and individual activity icons will override these defaults.';
 $string['globalmanage'] = 'Global icon settings';
 $string['globalmanage_help'] = 'Manage global default icons for all courses.';
+$string['iconhierarchy'] = 'Icon precedence hierarchy';
+$string['iconhierarchy_desc'] = 'When an activity is displayed in a course, the plugin will look for a custom icon in this order:<ol class="mt-2 mb-0"><li><strong>Individual Icon:</strong> Set by a teacher for a specific activity instance in their course.</li><li><strong>Course Default Icon:</strong> Set by a teacher for all activities of that type in their course.</li><li><strong>Global Default Icon:</strong> Set here by the administrator for the entire site.</li><li><strong>Moodle Default:</strong> The original icon if none of the above are set.</li></ol>';
 $string['individualicons'] = 'Individual icons';
 $string['manageicons'] = 'Customize activity icons';
 $string['manageicons_help'] = 'Upload SVG, PNG, JPG or GIF files to replace the default Moodle icons in your course activities.';

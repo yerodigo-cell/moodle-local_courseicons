@@ -194,7 +194,8 @@ if (!empty($modname)) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('globalmanage', 'local_courseicons'));
+$headingicon = $OUTPUT->pix_icon('icon', '', 'local_courseicons', ['class' => 'icon mr-2', 'style' => 'width: 40px; height: 40px; vertical-align: middle; margin-right: 10px; margin-bottom: 5px;']);
+echo $OUTPUT->heading($headingicon . ' ' . get_string('globalmanage', 'local_courseicons'));
 
 if (!empty($modname) && isset($mform)) {
     echo $OUTPUT->box_start('generalbox');
@@ -202,6 +203,11 @@ if (!empty($modname) && isset($mform)) {
     echo $OUTPUT->box_end();
 } else {
     echo html_writer::tag('p', get_string('globaliconsdesc', 'local_courseicons'), ['class' => 'text-muted']);
+
+    echo html_writer::start_div('alert alert-info mt-3 mb-4');
+    echo html_writer::tag('h4', get_string('iconhierarchy', 'local_courseicons'));
+    echo html_writer::tag('div', get_string('iconhierarchy_desc', 'local_courseicons'));
+    echo html_writer::end_div();
 
     $modules = $DB->get_records('modules', ['visible' => 1]);
     $modnames = [];

@@ -47,6 +47,8 @@ $string['globalicons'] = 'Iconos globales por defecto';
 $string['globaliconsdesc'] = 'Configura un icono por defecto para todas las actividades de un tipo específico en todo el sitio Moodle. Los iconos específicos del curso o de la actividad sobrescribirán estos valores globales.';
 $string['globalmanage'] = 'Configuración global de iconos';
 $string['globalmanage_help'] = 'Gestiona los iconos por defecto a nivel global para todos los cursos.';
+$string['iconhierarchy'] = 'Jerarquía de prioridad de iconos';
+$string['iconhierarchy_desc'] = 'Cuando se muestra una actividad en un curso, el plugin buscará un icono personalizado en el siguiente orden:<ol class="mt-2 mb-0"><li><strong>Icono Individual:</strong> Configurado por un profesor para una actividad específica en su curso.</li><li><strong>Icono por Defecto del Curso:</strong> Configurado por un profesor para todas las actividades de ese tipo en su curso.</li><li><strong>Icono Global por Defecto:</strong> Configurado aquí por el administrador para todo el sitio.</li><li><strong>Por Defecto de Moodle:</strong> El icono original si no se configuró ninguno de los anteriores.</li></ol>';
 $string['individualicons'] = 'Iconos individuales';
 $string['manageicons'] = 'Personalizar iconos de actividades';
 $string['manageicons_help'] = 'Sube archivos SVG, PNG, JPG o GIF para reemplazar los iconos por defecto de Moodle en las actividades de tu curso.';
