@@ -196,7 +196,7 @@ if (!empty($modname)) {
 echo $OUTPUT->header();
 $headingicon = $OUTPUT->pix_icon('icon', '', 'local_courseicons', [
     'class' => 'icon mr-2',
-    'style' => 'width: 40px; height: 40px; vertical-align: middle; margin-right: 10px; margin-bottom: 5px;'
+    'style' => 'width: 40px; height: 40px; vertical-align: middle; margin-right: 10px; margin-bottom: 5px;',
 ]);
 echo $OUTPUT->heading($headingicon . ' ' . get_string('globalmanage', 'local_courseicons'));
 
