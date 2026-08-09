@@ -65,7 +65,7 @@ function local_courseicons_standard_head_html(): string {
     $selectorstileicon = [];
     $selectorstilecontainer = [];
     $dynamiccontent = '';
-    
+
     $icondata = [];
     $defaultdata = [];
     $globaldata = [];
@@ -391,7 +391,11 @@ function local_courseicons_pluginfile(
     $forcedownload,
     array $options = []
 ) {
-    if ($context->contextlevel != CONTEXT_MODULE && $context->contextlevel != CONTEXT_COURSE && $context->contextlevel != CONTEXT_SYSTEM) {
+    if (
+        $context->contextlevel != CONTEXT_MODULE &&
+        $context->contextlevel != CONTEXT_COURSE &&
+        $context->contextlevel != CONTEXT_SYSTEM
+    ) {
         return false;
     }
 

@@ -71,7 +71,7 @@ class global_icon_upload_form extends moodleform {
         $currentfilename = '';
         $fs = get_file_storage();
         $globalrecord = $DB->get_record('local_courseicons_global', ['modname' => $modname]);
-        
+
         if ($globalrecord) {
             $context = \context_system::instance();
             $files = $fs->get_area_files($context->id, 'local_courseicons', 'globalicon', $globalrecord->id, 'id', false);
