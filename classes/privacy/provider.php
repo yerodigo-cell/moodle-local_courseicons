@@ -18,7 +18,7 @@
  * Privacy Subsystem implementation for local_courseicons.
  *
  * @package    local_courseicons
- * @copyright  2026 Yeison Díaz
+ * @copyright  2026 EduPlugins Studio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ use core_privacy\local\metadata\null_provider;
 /**
  * Privacy provider for local_courseicons.
  *
- * @copyright  2026 Yeison Díaz
+ * @copyright  2026 EduPlugins Studio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements null_provider {

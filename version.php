@@ -18,14 +18,14 @@
  * Plugin version details.
  *
  * @package    local_courseicons
- * @copyright  2026 Yeison Díaz
+ * @copyright  2026 EduPlugins Studio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_courseicons';
-$plugin->version   = 2026080800;
+$plugin->version   = 2026091900;
 $plugin->requires  = 2022041900;
 $plugin->release   = 'v2.2';
 $plugin->maturity  = MATURITY_STABLE;

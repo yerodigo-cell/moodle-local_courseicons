@@ -17,7 +17,7 @@
  * JS controller for the icon upload form tab switching and icon library grid in local_courseicons.
  *
  * @module     local_courseicons/form
- * @copyright  2026 Yeison Díaz
+ * @copyright  2026 EduPlugins Studio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
