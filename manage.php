@@ -694,9 +694,11 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         if ($currentsection !== $sectionnum) {
             $currentsection = $sectionnum;
             $iconfolder = '<i class="fa fa-folder-open text-primary me-2 mr-2" aria-hidden="true"></i>';
-            $headercell = new html_table_cell($iconfolder . html_writer::tag('span', $sectionname, ['class' => 'fw-bold font-weight-bold text-dark']));
+            $headertitle = html_writer::tag('span', $sectionname, ['class' => 'fw-bold font-weight-bold text-dark']);
+            $headercell = new html_table_cell($iconfolder . $headertitle);
             $headercell->colspan = 5;
-            $headercell->style = 'background-color: #f8f9fa; border-top: 2px solid #dee2e6; border-bottom: 1px solid #dee2e6; padding: 0.75rem 1rem;';
+            $headercell->style = 'background-color: #f8f9fa; border-top: 2px solid #dee2e6; '
+                . 'border-bottom: 1px solid #dee2e6; padding: 0.75rem 1rem;';
             $headercell->attributes['class'] = 'courseicons-section-heading-cell';
             $headerrow = new html_table_row([$headercell]);
             $headerrow->style = 'background-color: #f8f9fa;';
