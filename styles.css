@@ -289,4 +289,40 @@
 .courseicons-floating-buttons > * {
     pointer-events: auto; /* Re-enable clicks on the buttons themselves */
 }
+
+/* Ensure all table rows are clean white in all Moodle versions (removes confusing zebra stripes) */
+.path-local-courseicons .generaltable tbody tr td,
+.page-local-courseicons-manage .generaltable tbody tr td {
+    background-color: #ffffff !important;
+}
+
+.path-local-courseicons .generaltable tbody tr:hover td,
+.page-local-courseicons-manage .generaltable tbody tr:hover td {
+    background-color: #f8f9fa !important;
+}
+
+/* Horizontal section header separator styling */
+.path-local-courseicons .generaltable tbody tr.courseicons-section-header td,
+.page-local-courseicons-manage .generaltable tbody tr.courseicons-section-header td {
+    background-color: #f8f9fa !important;
+    border-top: 2px solid #dee2e6 !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    color: #1e293b !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.path-local-courseicons .generaltable tbody tr.courseicons-section-header:hover td,
+.page-local-courseicons-manage .generaltable tbody tr.courseicons-section-header:hover td {
+    background-color: #f8f9fa !important;
+}
+
+/* Table column header styling */
+.path-local-courseicons .generaltable thead th,
+.page-local-courseicons-manage .generaltable thead th,
+.path-local-courseicons .generaltable thead tr,
+.page-local-courseicons-manage .generaltable thead tr {
+    background-color: #f5f9fd !important;
+}
 /* stylelint-enable declaration-no-important */

@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Actions';
 $string['activitytypes'] = 'Activity types';
+$string['allsections'] = 'All sections';
 $string['alltypes'] = 'All types';
 $string['bulkdelete'] = 'Restore selected';
 $string['bulkupload'] = 'Change selected';
@@ -61,6 +62,7 @@ $string['privacy:metadata'] = 'The Course Activity Icons plugin does not store a
 $string['savechanges'] = 'Save changes';
 $string['searchactivities'] = 'Search activities...';
 $string['searchlibrary'] = 'Search library...';
+$string['section'] = 'Section';
 $string['selectfromlibrary'] = 'Choose from library';
 $string['setdefaulticon'] = 'Set default icon';
 $string['successdeleted'] = 'The custom icon has been deleted.';

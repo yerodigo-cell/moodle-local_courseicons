@@ -26,33 +26,55 @@ define(['jquery', 'core/str', 'core/notification'], function($, str, Notificatio
         init: function() {
             var searchInput = $('#courseicons-search');
             var filterSelect = $('#courseicons-filter');
+            var sectionSelect = $('#courseicons-section-filter');
             var tableRows = $('.courseicons-row');
+            var sectionHeaders = $('.courseicons-section-header');
 
             var filterTable = function() {
                 var searchText = searchInput.val().toLowerCase();
                 var filterType = filterSelect.val();
+                var filterSection = sectionSelect.length ? sectionSelect.val() : 'all';
+                var visibleSections = {};
 
                 tableRows.each(function() {
                     var row = $(this);
                     var modname = String(row.data('modname') || '');
                     var name = String(row.data('name') || '').toLowerCase();
+                    var section = String(row.data('section') !== undefined ? row.data('section') : '');
+                    var sectionname = String(row.data('sectionname') || '').toLowerCase();
 
-                    var matchSearch = name.indexOf(searchText) !== -1;
+                    var matchSearch = name.indexOf(searchText) !== -1 || sectionname.indexOf(searchText) !== -1;
                     var matchFilter = filterType === 'all' || modname === filterType;
+                    var matchSection = filterSection === 'all' || section === String(filterSection);
 
-                    if (matchSearch && matchFilter) {
+                    if (matchSearch && matchFilter && matchSection) {
                         row.show();
+                        visibleSections[section] = true;
                     } else {
                         row.hide();
                         // Uncheck hidden rows so they don't get bulk processed accidentally.
                         row.find('.courseicons-bulk-checkbox').prop('checked', false);
                     }
                 });
+
+                sectionHeaders.each(function() {
+                    var header = $(this);
+                    var secId = String(header.data('section') !== undefined ? header.data('section') : '');
+                    if (visibleSections[secId]) {
+                        header.show();
+                    } else {
+                        header.hide();
+                    }
+                });
+
                 $('#courseicons-bulk-submit').trigger('update-state');
             };
 
             searchInput.on('input', filterTable);
             filterSelect.on('change', filterTable);
+            if (sectionSelect.length) {
+                sectionSelect.on('change', filterTable);
+            }
 
             var bindBulkForm = function(selectAllId, checkboxClass, submitBtnId, uploadBtnId, formId, actionInputId, rowClass) {
                 var selectAll = $(selectAllId);

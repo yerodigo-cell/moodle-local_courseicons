@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 require_once('../../config.php');
 require_once($CFG->libdir . '/filelib.php');
+require_once($CFG->dirroot . '/course/lib.php');
 
 use local_courseicons\form\icon_upload_form;
 
@@ -362,6 +363,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo $OUTPUT->box_end();
 } else {
     $modinfo = get_fast_modinfo($course);
+    $courseformat = course_get_format($course);
 
     // Get full records to have the modification date (timemodified).
     $customicons = $DB->get_records('local_courseicons', ['courseid' => $course->id], '', 'cmid, id, timemodified');
@@ -372,15 +374,50 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     $strdefault = get_string('default', 'local_courseicons');
     $strediticon = get_string('editicon', 'local_courseicons');
 
+    // Retrieve and cache section names.
+    $sectionnames = [];
+    foreach ($modinfo->get_section_info_all() as $snum => $sinfo) {
+        $sectionnames[$snum] = $courseformat->get_section_name($sinfo);
+    }
+
+    // Order activities according to course sections and sequence.
+    $orderedmodules = [];
+    $processedcmids = [];
+    foreach ($modinfo->get_section_info_all() as $snum => $sinfo) {
+        if (!empty($modinfo->sections[$snum])) {
+            foreach ($modinfo->sections[$snum] as $cmid) {
+                if (isset($modinfo->cms[$cmid])) {
+                    $orderedmodules[] = $modinfo->cms[$cmid];
+                    $processedcmids[$cmid] = true;
+                }
+            }
+        }
+    }
+    foreach ($modinfo->cms as $cmid => $module) {
+        if (!isset($processedcmids[$cmid])) {
+            $orderedmodules[] = $module;
+        }
+    }
+
     $modnames = [];
-    foreach ($modinfo->cms as $module) {
+    $sectionhasactivities = [];
+    foreach ($orderedmodules as $module) {
         $ignoredmodules = ['label', 'subsection', 'qbank', 'questionbank', 'course_questionbank'];
         if (in_array($module->modname, $ignoredmodules) || !$module->has_view()) {
             continue;
         }
         $modnames[$module->modname] = get_string('pluginname', 'mod_' . $module->modname);
+        $sectionhasactivities[$module->sectionnum] = true;
     }
     asort($modnames);
+
+    $sectionoptions = ['all' => get_string('allsections', 'local_courseicons')];
+    foreach ($modinfo->get_section_info_all() as $snum => $sinfo) {
+        if (!empty($sectionhasactivities[$snum])) {
+            $sname = $sectionnames[$snum] ?? $courseformat->get_section_name($sinfo);
+            $sectionoptions[$snum] = format_string($sname);
+        }
+    }
 
     // Output the Tabs Navigation.
     $defaultactive = ($tab === 'default') ? 'active' : '';
@@ -433,19 +470,28 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo $OUTPUT->heading(get_string('defaulticons', 'local_courseicons'), 3);
     echo html_writer::tag('p', get_string('defaulticonscoursedesc', 'local_courseicons'), ['class' => 'text-muted']);
 
+    $thdefselect = new html_table_cell(html_writer::empty_tag('input', [
+        'type' => 'checkbox',
+        'id' => 'courseicons-select-all-def',
+        'title' => get_string('selectall'),
+        'class' => 'm-0',
+    ]));
+    $thdefselect->style = 'background-color: #f5f9fd;';
+
+    $thdeftypes = new html_table_cell(get_string('activitytypes', 'local_courseicons'));
+    $thdeftypes->style = 'background-color: #f5f9fd;';
+
+    $thdefprev = new html_table_cell(get_string('preview', 'local_courseicons'));
+    $thdefprev->style = 'background-color: #f5f9fd;';
+
+    $thdefcurr = new html_table_cell(get_string('currenticon', 'local_courseicons'));
+    $thdefcurr->style = 'background-color: #f5f9fd;';
+
+    $thdefact = new html_table_cell(html_writer::span(get_string('actions'), 'sr-only'));
+    $thdefact->style = 'background-color: #f5f9fd;';
+
     $deftable = new html_table();
-    $deftable->head = [
-        html_writer::empty_tag('input', [
-            'type' => 'checkbox',
-            'id' => 'courseicons-select-all-def',
-            'title' => get_string('selectall'),
-            'class' => 'm-0',
-        ]),
-        get_string('activitytypes', 'local_courseicons'),
-        get_string('preview', 'local_courseicons'),
-        get_string('currenticon', 'local_courseicons'),
-        html_writer::span(get_string('actions'), 'sr-only'),
-    ];
+    $deftable->head = [$thdefselect, $thdeftypes, $thdefprev, $thdefcurr, $thdefact];
     $deftable->attributes['class'] = 'generaltable table table-hover align-middle';
 
     foreach ($modnames as $mname => $pluginname) {
@@ -538,6 +584,8 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         $cellaction->attributes['class'] = 'text-end';
 
         $row = new html_table_row([$checkboxhtml, $modnamecell, $previewhtml, $statushtml, $cellaction]);
+        $row->style = 'background-color: #ffffff;';
+        $row->attributes['class'] = 'courseicons-def-row';
         $deftable->data[] = $row;
     }
 
@@ -582,7 +630,7 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo $OUTPUT->heading(get_string('individualicons', 'local_courseicons'), 3);
 
     echo html_writer::start_div('row mb-3');
-    echo html_writer::start_div('col-md-6 col-sm-12 mb-2');
+    echo html_writer::start_div('col-md-4 col-sm-12 mb-2');
     echo html_writer::empty_tag('input', [
         'type' => 'text',
         'id' => 'courseicons-search',
@@ -591,7 +639,14 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     ]);
     echo html_writer::end_div();
 
-    echo html_writer::start_div('col-md-6 col-sm-12');
+    echo html_writer::start_div('col-md-4 col-sm-12 mb-2');
+    echo html_writer::select($sectionoptions, 'sectionfilter', 'all', false, [
+        'id' => 'courseicons-section-filter',
+        'class' => 'form-control custom-select form-select',
+    ]);
+    echo html_writer::end_div();
+
+    echo html_writer::start_div('col-md-4 col-sm-12 mb-2');
     $filteroptions = ['all' => get_string('alltypes', 'local_courseicons')] + $modnames;
     echo html_writer::select($filteroptions, 'filter', 'all', false, [
         'id' => 'courseicons-filter',
@@ -600,26 +655,54 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
     echo html_writer::end_div();
     echo html_writer::end_div();
 
+    $thselect = new html_table_cell(html_writer::empty_tag('input', [
+        'type' => 'checkbox',
+        'id' => 'courseicons-select-all',
+        'title' => get_string('selectall'),
+        'class' => 'm-0',
+    ]));
+    $thselect->style = 'background-color: #f5f9fd;';
+
+    $thmod = new html_table_cell(get_string('modulename', 'local_courseicons'));
+    $thmod->style = 'background-color: #f5f9fd;';
+
+    $thprev = new html_table_cell(get_string('preview', 'local_courseicons'));
+    $thprev->style = 'background-color: #f5f9fd;';
+
+    $thcurr = new html_table_cell(get_string('currenticon', 'local_courseicons'));
+    $thcurr->style = 'background-color: #f5f9fd;';
+
+    $thact = new html_table_cell(html_writer::span(get_string('actions'), 'sr-only'));
+    $thact->style = 'background-color: #f5f9fd;';
+
     $table = new html_table();
-    $table->head = [
-        html_writer::empty_tag('input', [
-            'type' => 'checkbox',
-            'id' => 'courseicons-select-all',
-            'title' => get_string('selectall'),
-            'class' => 'm-0',
-        ]),
-        get_string('modulename', 'local_courseicons'),
-        get_string('preview', 'local_courseicons'),
-        get_string('currenticon', 'local_courseicons'),
-        html_writer::span(get_string('actions'), 'sr-only'),
-    ];
+    $table->head = [$thselect, $thmod, $thprev, $thcurr, $thact];
     $table->attributes['class'] = 'generaltable table table-hover align-middle';
 
-    foreach ($modinfo->cms as $module) {
+    $currentsection = null;
+    foreach ($orderedmodules as $module) {
         // Ignore labels, subsections (M4.3+), question banks (M5.x+) or structural items.
         $ignoredmodules = ['label', 'subsection', 'qbank', 'questionbank', 'course_questionbank'];
         if (in_array($module->modname, $ignoredmodules) || !$module->has_view()) {
             continue;
+        }
+
+        $sectionnum = $module->sectionnum;
+        $rawsectionname = $sectionnames[$sectionnum] ?? (get_string('section') . ' ' . $sectionnum);
+        $sectionname = format_string($rawsectionname);
+
+        if ($currentsection !== $sectionnum) {
+            $currentsection = $sectionnum;
+            $iconfolder = '<i class="fa fa-folder-open text-primary me-2 mr-2" aria-hidden="true"></i>';
+            $headercell = new html_table_cell($iconfolder . html_writer::tag('span', $sectionname, ['class' => 'fw-bold font-weight-bold text-dark']));
+            $headercell->colspan = 5;
+            $headercell->style = 'background-color: #f8f9fa; border-top: 2px solid #dee2e6; border-bottom: 1px solid #dee2e6; padding: 0.75rem 1rem;';
+            $headercell->attributes['class'] = 'courseicons-section-heading-cell';
+            $headerrow = new html_table_row([$headercell]);
+            $headerrow->style = 'background-color: #f8f9fa;';
+            $headerrow->attributes['class'] = 'courseicons-section-header';
+            $headerrow->attributes['data-section'] = (string)$sectionnum;
+            $table->data[] = $headerrow;
         }
 
         $previewhtml = '';
@@ -709,9 +792,12 @@ if (($cmid > 0 || !empty($bulkcmids) || !empty($defmodname)) && isset($mform)) {
         $cellaction->attributes['class'] = 'text-end';
 
         $row = new html_table_row([$checkboxhtml, $modnamecell, $previewhtml, $status, $cellaction]);
+        $row->style = 'background-color: #ffffff;';
         $row->attributes['class'] = 'courseicons-row';
         $row->attributes['data-modname'] = $module->modname;
         $row->attributes['data-name'] = format_string($module->name);
+        $row->attributes['data-section'] = (string)$sectionnum;
+        $row->attributes['data-sectionname'] = $sectionname;
         $table->data[] = $row;
     }
 

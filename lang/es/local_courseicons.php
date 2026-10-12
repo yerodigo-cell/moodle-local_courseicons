@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['actions'] = 'Acciones';
 $string['activitytypes'] = 'Tipos de actividad';
+$string['allsections'] = 'Todas las secciones';
 $string['alltypes'] = 'Todos los tipos';
 $string['bulkdelete'] = 'Restaurar seleccionados';
 $string['bulkupload'] = 'Cambiar seleccionados';
@@ -61,6 +62,7 @@ $string['privacy:metadata'] = 'El plugin Iconos de Actividad del Curso no almace
 $string['savechanges'] = 'Guardar cambios';
 $string['searchactivities'] = 'Buscar actividades...';
 $string['searchlibrary'] = 'Buscar en la biblioteca...';
+$string['section'] = 'Sección';
 $string['selectfromlibrary'] = 'Elegir de la biblioteca';
 $string['setdefaulticon'] = 'Establecer icono por defecto';
 $string['successdeleted'] = 'El icono personalizado ha sido eliminado.';
